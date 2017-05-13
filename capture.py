@@ -1,4 +1,4 @@
-import pyscreenshot as ImageGrab
+from PIL import ImageGrab
 from ctypes import *
 
 user32, gdi32 = windll.user32, windll.gdi32
