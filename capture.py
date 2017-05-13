@@ -1,7 +1,9 @@
-from PIL import ImageGrab
+import pyscreenshot as ImageGrab
 from ctypes import *
 
 user32, gdi32 = windll.user32, windll.gdi32
+user32.SetProcessDPIAware()
+
 class RECT(Structure):
     _fields_ = [('left', c_long), ('top', c_long), ('right', c_long), ('bottom', c_long)]
     def __str__(self):
@@ -28,5 +30,15 @@ class WindowCapture:
         user32.ClientToScreen(self.hwnd, byref(self.topleft))
 
         return ImageGrab.grab((self.topleft.x, self.topleft.y,
-                             self.topleft.x + self.clientrect.right,
-                             self.topleft.y + self.clientrect.bottom))
+            self.topleft.x + self.clientrect.right,
+            self.topleft.y + self.clientrect.bottom))
+
+        return ImageGrab.grab()
+
+if __name__ == '__main__':
+    capture = WindowCapture("Mupen64Plus OpenGL Video Plugin by Rice v2.5.0")
+
+    for i in range(100):
+        im = capture.capture()
+        im.save("images/{}.png".format(i))
+        print(i)
