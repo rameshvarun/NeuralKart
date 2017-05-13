@@ -18,6 +18,7 @@ NUM_AXES = joy.get_numaxes()
 
 AXIS_X_HORIZONTAL = 0
 AXIS_X_VERTICAL = 1
+AXIS_TRIGGERS = 2
 
 def get_axis(axis_number):
     return joy.get_axis(axis_number)
