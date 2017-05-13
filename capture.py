@@ -36,7 +36,7 @@ class WindowCapture:
         return ImageGrab.grab()
 
 if __name__ == '__main__':
-    capture = WindowCapture("Mupen64Plus OpenGL Video Plugin by Rice v2.5.0")
+    capture = WindowCapture(u"Mupen64Plus OpenGL Video Plugin by Rice v2.5.0")
 
     for i in range(100):
         im = capture.capture()
