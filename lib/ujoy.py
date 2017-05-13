@@ -1,3 +1,8 @@
+"""
+This module wraps the interactions with the "user joystick" - which is the physical
+joystick used to play the game during training time.
+"""
+
 import pygame
 
 pygame.joystick.init()

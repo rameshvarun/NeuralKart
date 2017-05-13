@@ -2,6 +2,7 @@ import os
 import errno
 
 class MovingAverage:
+  """Keep track of an exponentially weighted moving average. Used for FPS."""
    def __init__(self, alpha, initial=0):
        self.value = initial
        self.alpha = alpha

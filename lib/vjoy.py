@@ -1,3 +1,8 @@
+"""
+This module wraps interactions with the "virtual joystick" - which is what the
+game actually sees as input.
+"""
+
 import pyvjoy
 vjoy = pyvjoy.VJoyDevice(1)
 

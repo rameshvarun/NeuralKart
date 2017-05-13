@@ -4,8 +4,6 @@ from lib import vjoy, ujoy
 from lib.capture import WindowCapture
 from lib.utils import *
 
-
-
 class RecordThread (threading.Thread):
    def __init__(self, capture, recording_id, steering_file):
       threading.Thread.__init__(self)

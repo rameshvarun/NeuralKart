@@ -1,3 +1,9 @@
+"""
+This module wraps functions for capturing a window into a PIL Image object.
+It uses WinAPI functions (accessed through ctypes) to get the bounds of a Window
+and PIL's ImageGrab extension to get the data.
+"""
+
 from PIL import ImageGrab
 from ctypes import *
 
