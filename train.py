@@ -84,11 +84,7 @@ if __name__ == '__main__':
     batch_size = 50
 
     model = create_model()
-    if os.path.isfile("checkpoints/model_weights.hdf5"):
-        model.load_weights("checkpoints/model_weights.hdf5")
 
     model.compile(loss=customized_loss, optimizer=optimizers.adam())
-    checkpointer = ModelCheckpoint(filepath="checkpoints/model_weights.hdf5", verbose=1, save_best_only=True, period=2)
+    checkpointer = ModelCheckpoint(monitor='val_loss', filepath="weights.hdf5", verbose=1, save_best_only=True, mode='min')
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
-
-    # model.save_weights('checkpoints/model_weights.hdf5')
