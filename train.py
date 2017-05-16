@@ -8,6 +8,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D
 from keras import optimizers
 from keras import backend as K
+from keras.callbacks import ModelCheckpoint
 
 import matplotlib.pyplot as plt
 
@@ -68,10 +69,7 @@ def load_training_data():
             X.append(im_arr)
 
     X_train = np.asarray(X)
-    y_train = np.asarray(y)
-
-    print(X_train.shape, y_train.shape)
-    quit()
+    y_train = np.asarray(y).reshape((len(y), 1))
 
     return X_train, y_train
 
@@ -86,7 +84,11 @@ if __name__ == '__main__':
     batch_size = 50
 
     model = create_model()
-    model.compile(loss=customized_loss, optimizer=optimizers.adam())
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_split=0.1)
+    if os.path.isfile("checkpoints/model_weights.hdf5"):
+        model.load_weights("checkpoints/model_weights.hdf5")
 
-    model.save_weights('model_weights.h5')
+    model.compile(loss=customized_loss, optimizer=optimizers.adam())
+    checkpointer = ModelCheckpoint(filepath="checkpoints/model_weights.hdf5", verbose=1, save_best_only=True, period=2)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
+
+    # model.save_weights('checkpoints/model_weights.hdf5')
