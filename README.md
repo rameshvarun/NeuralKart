@@ -14,14 +14,6 @@ pip install --user Pillow pygame
 You need to install the Vjoy driver, which will emulate a joystick.
 http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
 
-### Feeder SDK
-The Feeder SDK is used to control the virtual VJoy device from an application.
-You need to download it.
-
-http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
-
-Then, unzip the SDK and look in the `SDK/lib` folder. If you are using a 32-bit version of Python, you should take the `vJoyInterface.dll` file (for 64-bit Python take the `amd64/vJoyInterface.dll` file) and put it in the `pyvjoy` directory.
-
 ## Mupen64Plus
 
 You need to download Mupen64Plus from https://github.com/mupen64plus/mupen64plus-core/releases.
