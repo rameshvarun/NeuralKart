@@ -62,8 +62,9 @@ class OverrideThread (threading.Thread):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--override', action='store_true',
-                        help='Allow for manual overrides by the user.')
+    parser.add_argument('--allow-override', action='store_true',
+                        help='Allow for manual overrides by the user.',
+                        dest='override')
     args = parser.parse_args()
 
     if args.override:
