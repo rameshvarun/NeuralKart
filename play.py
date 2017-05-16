@@ -1,4 +1,11 @@
-import shutil, os, subprocess, argparse, time, sys, uuid, threading
+import shutil
+import os
+import subprocess
+import argparse
+import time
+import sys
+import uuid
+import threading
 
 import numpy as np
 
@@ -13,45 +20,50 @@ from lib import vjoy
 from lib.capture import WindowCapture
 from lib.utils import MovingAverage, mkdirp
 
+
 class OverrideThread (threading.Thread):
-   def __init__(self):
-       threading.Thread.__init__(self)
-       self.recording_id = "overrides-" + str(uuid.uuid4())
-       mkdirp('recordings/')
-       mkdirp('recordings/' + self.recording_id + '/')
-       self.steering_file = open('recordings/{}/steering.txt'.format(self.recording_id), 'w')
-       self.overriding_steer = None
-       self.running = True
-       self.override_frame = 1
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.recording_id = "overrides-" + str(uuid.uuid4())
+        mkdirp('recordings/')
+        mkdirp('recordings/' + self.recording_id + '/')
+        self.steering_file = open(
+            'recordings/{}/steering.txt'.format(self.recording_id), 'w')
+        self.overriding_steer = None
+        self.running = True
+        self.override_frame = 1
 
-   def run(self):
-       print ("Starting override thread...")
-       from lib import ujoy
+    def run(self):
+        print("Starting override thread...")
+        from lib import ujoy
 
-       while self.running:
-           ujoy.process_events()
-           steer = ujoy.get_axis(ujoy.AXIS_X_HORIZONTAL)
-           if abs(steer) > MANUAL_OVERRIDE_DEAD_ZONE:
-               print (Fore.YELLOW + "Manual override:", steer, Style.RESET_ALL)
-               self.overriding_steer = steer
-               vjoy.set_steering(steer)
-           else:
-               self.overriding_steer = None
+        while self.running:
+            ujoy.process_events()
+            steer = ujoy.get_axis(ujoy.AXIS_X_HORIZONTAL)
+            if abs(steer) > MANUAL_OVERRIDE_DEAD_ZONE:
+                print(Fore.YELLOW + "Manual override:", steer, Style.RESET_ALL)
+                self.overriding_steer = steer
+                vjoy.set_steering(steer)
+            else:
+                self.overriding_steer = None
 
-       self.steering_file.close()
-       print ("Exiting override thread...")
+        self.steering_file.close()
+        print("Exiting override thread...")
 
-   def save_frame(self, image, steer):
-    self.steering_file.write(str(steer)); self.steering_file.write('\n')
-    im.save("recordings/{}/{}.png".format(self.recording_id, self.override_frame))
-    self.override_frame += 1
+    def save_frame(self, image, steer):
+        self.steering_file.write(str(steer))
+        self.steering_file.write('\n')
+        im.save("recordings/{}/{}.png".format(self.recording_id, self.override_frame))
+        self.override_frame += 1
 
-   def stop(self):
-      self.running = False
+    def stop(self):
+        self.running = False
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--override', action='store_true', help='Allow for manual overrides by the user.')
+    parser.add_argument('--override', action='store_true',
+                        help='Allow for manual overrides by the user.')
     args = parser.parse_args()
 
     if args.override:
@@ -69,12 +81,12 @@ if __name__ == "__main__":
 
     mupen_dir = os.path.dirname(mupen)
     emulator = subprocess.Popen(["mupen64plus-ui-console.exe",
-        "--savestate", "states/luigis-raceway.st0",
-        "--resolution", "320x240",
-        "--plugindir", mupen_dir,
-        "--datadir", mupen_dir,
-        "--configdir", ".",
-        'mariokart64.n64'])
+                                 "--savestate", "states/luigis-raceway.st0",
+                                 "--resolution", "320x240",
+                                 "--plugindir", mupen_dir,
+                                 "--datadir", mupen_dir,
+                                 "--configdir", ".",
+                                 'mariokart64.n64'])
 
     model = create_model(keep_prob=1)
     model.load_weights('weights.hdf5')

@@ -9,7 +9,8 @@ pygame.joystick.init()
 pygame.display.init()
 
 # Get the user joystick, which will be mapped to the virtual joystick.
-joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+joysticks = [pygame.joystick.Joystick(x)
+             for x in range(pygame.joystick.get_count())]
 
 try:
     joy = [j for j in joysticks if j.get_name() != "vJoy Device"][0]
@@ -25,8 +26,10 @@ AXIS_X_HORIZONTAL = 0
 AXIS_X_VERTICAL = 1
 AXIS_TRIGGERS = 2
 
+
 def get_axis(axis_number):
     return joy.get_axis(axis_number)
+
 
 BUTTON_A = 0
 BUTTON_B = 1
@@ -34,19 +37,24 @@ BUTTON_X = 2
 BUTTON_Y = 3
 BUTTON_START = 7
 
+
 def get_button(button):
     return joy.get_button(button)
+
 
 def get_button_down(button):
     return get_button(button) and not previous_state[button]
 
+
 def get_button_up(button):
     return not get_button(button) and previous_state[button]
+
 
 def process_events():
     global previous_state
     previous_state = [joy.get_button(i) for i in range(NUM_BUTTONS)]
     pygame.event.pump()
+
 
 if __name__ == "__main__":
     import time

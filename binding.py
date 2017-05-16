@@ -1,10 +1,13 @@
-import cmd, time
+import cmd
+import time
 from lib import vjoy
+
 
 def countdown(num):
     for i in range(num, 0, -1):
         print(str(i) + "...")
         time.sleep(1)
+
 
 class BindingMode(cmd.Cmd):
     prompt = '(mode-binding) '
@@ -38,6 +41,7 @@ class BindingMode(cmd.Cmd):
 
     def preloop(self):
         print("Entering binding mode...")
+
 
 if __name__ == "__main__":
     BindingMode().cmdloop()
