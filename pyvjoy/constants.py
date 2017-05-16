@@ -1,4 +1,12 @@
-DLL_FILENAME = "vJoyInterface.dll"
+import platform
+
+arch = platform.architecture()[0]
+if arch == "64bit":
+    DLL_FILENAME = "vJoyInterface64.dll"
+elif arch == "32bit":
+    DLL_FILENAME = "vJoyInterface32.dll"
+else:
+    sys.exit("Unknown architecture {}.".format(arch))
 
 HID_USAGE_X = 0x30
 HID_USAGE_Y	= 0x31
@@ -21,4 +29,3 @@ VJD_STAT_FREE = 1 	# The  vJoy Device is NOT owned by any application (including
 VJD_STAT_BUSY = 2   # The  vJoy Device is owned by another application. It cannot be acquired by this application.
 VJD_STAT_MISS = 3 	# The  vJoy Device is missing. It either does not exist or the driver is down.
 VJD_STAT_UNKN = 4 	# Unknown
-
