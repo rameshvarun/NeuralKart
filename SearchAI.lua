@@ -1,13 +1,13 @@
 -- Each step forward lasts this many frames.
 FRAMES_PER_STEP = 30
 
-FORWARD_FRAMES = 60
+FORWARD_FRAMES = 30
 
 -- The steering is discretized into this many bins.
 STEERING_BINS = 5
 
 -- The depth to search.
-SEARCH_DEPTH = 1
+SEARCH_DEPTH = 2
 
 PROGRESS_WEIGHT = 1
 VELOCITY_WEIGHT = 0.1
@@ -42,6 +42,9 @@ function eval_actions(actions)
     emu.frameadvance()
   end
 
+  print("Current Score:", PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity())
+  print(unpack(actions))
+
   return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
 end
 
@@ -50,10 +53,10 @@ function best_next_action(actions_so_far)
     return nil, eval_actions(actions_so_far)
   end
 
-  best_action, best_score = nil, -math.huge
+  local best_action, best_score = nil, -math.huge
   for next_action=-1, 1, 2/(STEERING_BINS - 1) do
     table.insert(actions_so_far, next_action)
-    _, score = best_next_action(actions_so_far)
+    local _, score = best_next_action(actions_so_far)
     if score > best_score then
       best_score = score
       best_action = next_action
