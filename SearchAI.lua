@@ -9,9 +9,15 @@ STEERING_BINS = 5
 -- The depth to search.
 SEARCH_DEPTH = 1
 
+PROGRESS_WEIGHT = 1
+VELOCITY_WEIGHT = 0.1
+
 -- Read the current progress in the course from memory.
-PROGRESS_ADRESS = 0x162FD8
-function read_progress() return mainmemory.readfloat(PROGRESS_ADRESS, true) end
+PROGRESS_ADDRESS = 0x162FD8
+function read_progress() return mainmemory.readfloat(PROGRESS_ADDRESS, true) end
+
+VELOCITY_ADDRESS = 0x0F6BBC
+function read_velocity() return mainmemory.readfloat(VELOCITY_ADDRESS, true) end
 
 client.unpause()
 
@@ -36,7 +42,7 @@ function eval_actions(actions)
     emu.frameadvance()
   end
 
-  return read_progress()
+  return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
 end
 
 function best_next_action(actions_so_far)
