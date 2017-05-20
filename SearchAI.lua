@@ -5,7 +5,7 @@ local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
 local STATE_FILE = TMP_DIR .. '\\root.state'
 
 -- Generate a recording id and create a folder for that recording.
-local uuid = require("lualibs.uuid")
+local uuid = require("lualibs.uuid"); uuid.seed()
 os.execute('mkdir recordings')
 local RECORDING_ID = uuid()
 print("Recording ID:", RECORDING_ID)

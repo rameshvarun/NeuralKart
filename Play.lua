@@ -1,38 +1,59 @@
-local WORKING_DIR = io.popen("cd"):read("*l")
-local PYTHON_LOC = io.popen("where python"):read("*l")
 local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
-print("Working Dir:", WORKING_DIR)
-print("Python Location:", PYTHON_LOC)
-print("TEMP Directory:", TMP_DIR)
-
 local SCREENSHOT_FILE = TMP_DIR .. '\\predict-screenshot.png'
 
 local tcp = require("lualibs.socket").tcp()
-
-
-local port = nil
-while true do
-  local line = server:read("*line")
-  port = line:match("Listening on Port: (%d+)")
-  if port ~= nil then break end
-end
-
-print ("Server running on port:", port)
-tcp:connect('localhost', port)
+tcp:connect('localhost', 36296)
+tcp:settimeout(0)
 
 client.unpause()
 
-while true do
-  client.screenshot(SCREENSHOT_FILE)
-  tcp:send("PREDICT:" .. SCREENSHOT_FILE .. "\n")
-  local s, status, partial = tcp:receive("*l")
-  if status == "closed" then break end
 
-  print(s or partial)
-  emu.frameadvance()
+outgoing_message, outgoing_message_index = nil, nil
+function request_prediction()
+  client.screenshot(SCREENSHOT_FILE)
+  outgoing_message = "PREDICT:" .. SCREENSHOT_FILE .. "\n"
+  outgoing_message_index = 1
 end
+request_prediction()
+
+local receive_buffer = ""
 
 event.onexit(function()
   client.pause()
-  tcp:send("QUIT\n")
+  tcp:close()
 end)
+
+local current_action = 0
+
+while true do
+  -- Process the outgoing message.
+  if outgoing_message ~= nil then
+    local sent, error, last_byte = tcp:send(outgoing_message, outgoing_message_index)
+    if sent ~= nil then
+      outgoing_message = nil
+      outgoing_message_index = nil
+    else
+      if error == "timeout" then
+        outgoing_message_index = last_byte + 1
+      else
+        print("Send failed: ", error); break
+      end
+    end
+  end
+
+  local message, error
+  message, error, receive_buffer = tcp:receive("*l", receive_buffer)
+  if message == nil then
+    if error ~= "timeout" then
+      print("Receive failed: ", error); break
+    end
+  else
+    print(message)
+    current_action = tonumber(message)
+    request_prediction()
+  end
+
+  joypad.set({["P1 A"] = true})
+  joypad.setanalog({["P1 X Axis"] = 127 * current_action})
+  emu.frameadvance()
+end
