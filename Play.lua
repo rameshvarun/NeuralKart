@@ -9,7 +9,6 @@ local SCREENSHOT_FILE = TMP_DIR .. '\\predict-screenshot.png'
 
 local tcp = require("lualibs.socket").tcp()
 
-local server = io.popen([[python "]] .. WORKING_DIR .. [[\predict-server.py"]])
 
 local port = nil
 while true do
@@ -26,6 +25,10 @@ client.unpause()
 while true do
   client.screenshot(SCREENSHOT_FILE)
   tcp:send("PREDICT:" .. SCREENSHOT_FILE .. "\n")
+  local s, status, partial = tcp:receive("*l")
+  if status == "closed" then break end
+
+  print(s or partial)
   emu.frameadvance()
 end
 

@@ -1,24 +1,14 @@
-Make sure you're using Python3.
 
 # Set-up
 
 ## Install Python Dependencies
 
 ```bash
-pip install --user Pillow pygame
+pip install --user Pillow
 ```
 
-## VJoy
+## BizHawk
 
-### Driver
-You need to install the Vjoy driver, which will emulate a joystick.
-http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
-
-## Mupen64Plus
-
-You need to download Mupen64Plus from https://github.com/mupen64plus/mupen64plus-core/releases.
-
-You also need to add the folder to your path.
 
 ## MarioKart 64
 

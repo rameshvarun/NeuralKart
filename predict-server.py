@@ -1,27 +1,23 @@
-import sys, time, logging, os
+import sys, time, logging, os, argparse
 
 import numpy as np
 from PIL import Image
 from socketserver import TCPServer, StreamRequestHandler
 
-logging.basicConfig(filename='predict-server.log',level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-sys.excepthook = handle_exception
-
-sys.stderr = open(os.devnull, "w")
 from train import create_model, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
+
+logger.info("Loading model...")
+model = create_model(keep_prob=1)
+model.load_weights('weights.hdf5')
 
 class TCPHandler(StreamRequestHandler):
     def handle(self):
         message = str(self.rfile.readline().strip(),'utf-8')
         logger.debug(message)
+
         if message == "QUIT":
             logger.info("Server shutting down...")
             self.shutdown()
@@ -38,13 +34,12 @@ class TCPHandler(StreamRequestHandler):
             self.wfile.write("\n")
 
 if __name__ == "__main__":
-    logger.info("Loading model...")
-    model = create_model(keep_prob=1)
-    model.load_weights('weights.hdf5')
+    parser = argparse.ArgumentParser(description='Start a prediction server that other apps will call into.')
+    parser.add_argument('-p', '--port', type=int, help='Port number', default=36296	)
+    args = parser.parse_args()
 
     logger.info("Starting server...")
-    server = TCPServer(('0.0.0.0', 0), TCPHandler)
-    server.model - model
+    server = TCPServer(('0.0.0.0', args.port), TCPHandler)
 
     print("Listening on Port: {}".format(server.server_address[1]))
     sys.stdout.flush()
