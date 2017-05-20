@@ -38,6 +38,7 @@ function read_velocity() return mainmemory.readfloat(VELOCITY_ADDRESS, true) end
 last_action = 0
 
 client.unpause()
+client.speedmode(800)
 
 event.onexit(function()
   if steering_file ~= nil then
@@ -45,6 +46,8 @@ event.onexit(function()
   end
 
   client.pause()
+  savestate.load(STATE_FILE)
+  client.speedmode(100)
   client.unpause_av()
 end)
 

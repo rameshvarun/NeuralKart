@@ -2,10 +2,17 @@ local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
 local SCREENSHOT_FILE = TMP_DIR .. '\\predict-screenshot.png'
 
 local tcp = require("lualibs.socket").tcp()
-tcp:connect('localhost', 36296)
+local success, error = tcp:connect('localhost', 36296)
+if not success then
+  print("Failed to connect to server:", error)
+  return
+end
+
 tcp:settimeout(0)
 
 client.unpause()
+
+local WAIT_FRAMES = 5
 
 
 outgoing_message, outgoing_message_index = nil, nil
@@ -48,8 +55,12 @@ while true do
       print("Receive failed: ", error); break
     end
   else
-    print(message)
     current_action = tonumber(message)
+    for i=1, WAIT_FRAMES do
+      joypad.set({["P1 A"] = true})
+      joypad.setanalog({["P1 X Axis"] = 127 * current_action})
+      emu.frameadvance()
+    end
     request_prediction()
   end
 
