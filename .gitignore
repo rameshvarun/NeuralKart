@@ -3,3 +3,4 @@ mariokart64.n64
 recordings/
 .idea
 weights.hdf5
+*.log

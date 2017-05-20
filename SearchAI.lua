@@ -1,3 +1,17 @@
+local WORKING_DIR = io.popen("cd"):read("*l")
+local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
+
+-- The save state will be temporarily stored in this file when performing a search.
+local STATE_FILE = TMP_DIR .. '\\root.state'
+
+-- Generate a recording id and create a folder for that recording.
+local uuid = require("lualibs.uuid")
+os.execute('mkdir recordings')
+local RECORDING_ID = uuid()
+print("Recording ID:", RECORDING_ID)
+local RECORDING_FOLDER = 'recordings\\search-' .. RECORDING_ID
+os.execute('mkdir ' .. RECORDING_FOLDER)
+
 -- Each step forward lasts this many frames.
 FRAMES_PER_STEP = 30
 
@@ -26,12 +40,16 @@ last_action = 0
 client.unpause()
 
 event.onexit(function()
+  if steering_file ~= nil then
+    steering_file:close()
+  end
+
   client.pause()
   client.unpause_av()
 end)
 
 function eval_actions(actions)
-  savestate.load('root.state')
+  savestate.load(STATE_FILE)
   for _, action in ipairs(actions) do
     for i=1, FRAMES_PER_STEP do
       joypad.set({["P1 A"] = true})
@@ -76,10 +94,12 @@ function best_next_action(actions_so_far, last_action)
   return best_action, best_score
 end
 
+local recording_frame = 1
+local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
 while true do
   client.pause_av()
   start_time = os.time()
-  savestate.save('root.state')
+  savestate.save(STATE_FILE)
   action, score = best_next_action({}, last_action)
   last_action = action
 
@@ -87,7 +107,13 @@ while true do
 
   print("Action:", action, "Score:", score, "Time:", end_time - start_time)
 
-  savestate.load('root.state')
+  savestate.load(STATE_FILE)
+
+  client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
+  steering_file:write(action .. '\n')
+  steering_file:flush()
+  recording_frame = recording_frame + 1
+
   client.unpause_av()
   for i=1, FRAMES_PER_STEP do
     joypad.set({["P1 A"] = true})
@@ -96,4 +122,5 @@ while true do
   end
 end
 
+steering_file:close()
 client.pause()
