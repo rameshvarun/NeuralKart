@@ -64,9 +64,6 @@ function eval_actions(actions)
     emu.frameadvance()
   end
 
-  print("Current Score:", PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity())
-  print(unpack(actions))
-
   return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
 end
 
