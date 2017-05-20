@@ -1,5 +1,6 @@
 import glob
 import os
+import hashlib
 
 from PIL import Image
 
@@ -19,6 +20,7 @@ INPUT_WIDTH = 200
 INPUT_HEIGHT = 66
 INPUT_CHANNELS = 3
 
+VALIDATION_SPLIT = 0.1
 
 def customized_loss(y_true, y_pred, loss='euclidean'):
     # Simply a mean squared error that penalizes large joystick summed values
@@ -58,7 +60,8 @@ def create_model(keep_prob=0.8):
 
 
 def load_training_data():
-    X, y = [], []
+    X_train, y_train = [], []
+    X_val, y_val = [], []
 
     for recording in os.listdir('recordings'):
         filenames = list(glob.iglob('recordings/{}/*.png'.format(recording)))
@@ -66,26 +69,37 @@ def load_training_data():
 
         steering = [float(line) for line in open(
             ("recordings/{}/steering.txt").format(recording)).read().splitlines()]
-        y.extend(steering)
 
-        for file in filenames:
+        for file, steer in zip(filenames, steering):
+            name_hash = hashlib.md5(file.encode('utf-8')).digest()
+            prob = int.from_bytes(name_hash[:2], byteorder='big') / 2**16
+
             im = Image.open(file).resize((INPUT_WIDTH, INPUT_HEIGHT))
             im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
-            im_arr = im_arr.reshape(
-                (INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
-            X.append(im_arr)
+            im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
-    X_train = np.asarray(X)
-    y_train = np.asarray(y).reshape((len(y), 1))
+            if prob > VALIDATION_SPLIT:
+                X_train.append(im_arr)
+                y_train.append(steer)
+            else:
+                X_val.append(im_arr)
+                y_val.append(steer)
 
-    return X_train, y_train
+    assert len(X_train) == len(y_train)
+    assert len(X_val) == len(y_val)
+
+    return np.asarray(X_train), \
+        np.asarray(y_train).reshape((len(y_train), 1)), \
+        np.asarray(X_val), \
+        np.asarray(y_val).reshape((len(y_val), 1))
 
 
 if __name__ == '__main__':
     # Load Training Data
-    x_train, y_train = load_training_data()
+    X_train, y_train, X_val, y_val = load_training_data()
 
-    print(x_train.shape[0], 'train samples')
+    print(X_train.shape[0], 'training samples.')
+    print(X_val.shape[0], 'validation samples.')
 
     # Training loop variables
     epochs = 100
@@ -96,5 +110,5 @@ if __name__ == '__main__':
     model.compile(loss=customized_loss, optimizer=optimizers.adam())
     checkpointer = ModelCheckpoint(
         monitor='val_loss', filepath="weights.hdf5", verbose=1, save_best_only=True, mode='min')
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-              shuffle=True, validation_split=0.1, callbacks=[checkpointer])
+    model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs,
+              shuffle=True, validation_data=(X_val, y_val), callbacks=[checkpointer])
