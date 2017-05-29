@@ -1,4 +1,6 @@
 FRAMES_FORWARD = 60
+NUM_ANGLES = 51
+USE_MAPPING = true
 
 function math.sign(x)
   if x > 0 then return 1
@@ -6,14 +8,33 @@ function math.sign(x)
   else return 0 end
 end
 
-ANGLES = {}
+assert(NUM_ANGLES % 2 == 1, "NUM_ANGLES must be odd.")
 
-for i=-1, 1, 2*(1) / 12 do
-  table.insert(ANGLES, math.sign(i) * math.sqrt(math.abs(i) * 0.24 + 0.01))
+function linspace(start, vend, divs)
+  local val = start
+  local step_size = (vend - start) / (divs - 1)
+  local i = -1
+  return function ()
+    i = i + 1
+    if i < divs - 1 then
+      return start + i * step_size
+    elseif i == divs - 1 then
+      return vend
+    end
+  end
 end
 
-print("Number of angles:", #ANGLES)
--- ANGLES = {-1, -0.5, -0.45, -0.4, -0.35, -0.3, -0.25, 0, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 1}
+ANGLES = {}
+RAW = {}
+for i in linspace(-1, 1, NUM_ANGLES) do
+  table.insert(RAW, i)
+  if USE_MAPPING then
+    table.insert(ANGLES, math.sign(i) * math.sqrt(math.abs(i) * 0.24 + 0.01))
+  else
+    table.insert(ANGLES, i)
+  end
+end
+assert(#ANGLES == NUM_ANGLES)
 
 -- The save state will be temporarily stored in this file when performing a search.
 local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
@@ -29,7 +50,7 @@ end)
 
 function readx() return mainmemory.readfloat(0x0F69A4, true) end
 
-for _, angle in ipairs(ANGLES) do
+for i, angle in ipairs(ANGLES) do
   savestate.load(STATE_FILE)
   emu.frameadvance()
   local start_x = readx()
@@ -40,5 +61,9 @@ for _, angle in ipairs(ANGLES) do
     emu.frameadvance()
   end
 
-  print("Angle = ", angle, "X Difference =", readx() - start_x)
+  if USE_MAPPING then
+    print("Raw = ", RAW[i], "Joystick = ", angle, "X Difference =", readx() - start_x)
+  else
+    print("Joystick = ", angle, "X Difference =", readx() - start_x)
+  end
 end
