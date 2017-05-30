@@ -33,7 +33,7 @@ VELOCITY_WEIGHT = 0.1
 angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 
 -- Read the current progress in the course from memory.
-PROGRESS_ADDRESS = 0x162FD8
+PROGRESS_ADDRESS = 0x1644D0
 function read_progress() return mainmemory.readfloat(PROGRESS_ADDRESS, true) end
 -- Read the velocity of the player from meory.
 VELOCITY_ADDRESS = 0x0F6BBC
