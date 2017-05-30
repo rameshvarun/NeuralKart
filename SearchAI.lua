@@ -61,6 +61,9 @@ exit_guid = event.onexit(onexit)
 
 function eval_actions(actions)
   savestate.load(STATE_FILE)
+
+  local start_progress = read_progress()
+
   for _, action in ipairs(actions) do
     for i=1, FRAMES_PER_STEP do
       joypad.set({["P1 A"] = true})
@@ -75,7 +78,13 @@ function eval_actions(actions)
     emu.frameadvance()
   end
 
-  return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
+  local end_progress = read_progress()
+
+  if end_progress > start_progress then
+    return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
+  else
+    return PROGRESS_WEIGHT * read_progress()
+  end
 end
 
 function best_next_action(actions_so_far, last_action)
