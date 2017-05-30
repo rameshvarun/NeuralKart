@@ -9,12 +9,11 @@ logger = logging.getLogger(__name__)
 
 from train import create_model, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
 
-logger.info("Loading model...")
-model = create_model(keep_prob=1)
-model.load_weights('weights.hdf5')
-
 class TCPHandler(StreamRequestHandler):
     def handle(self):
+        logger.info("Reloading model weights...")
+        model.load_weights('weights.hdf5')
+
         logger.info("Handling a new connection...")
         for line in self.rfile:
             message = str(line.strip(),'utf-8')
@@ -32,8 +31,17 @@ class TCPHandler(StreamRequestHandler):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Start a prediction server that other apps will call into.')
-    parser.add_argument('-p', '--port', type=int, help='Port number', default=36296	)
+    parser.add_argument('-p', '--port', type=int, help='Port number', default=36296)
+    parser.add_argument('-c', '--cpu', action='store_true', help='Force Tensorflow to use the CPU.', default=False)
     args = parser.parse_args()
+
+    if args.cpu:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+    logger.info("Loading model...")
+    model = create_model(keep_prob=1)
+    model.load_weights('weights.hdf5')
 
     logger.info("Starting server...")
     server = TCPServer(('0.0.0.0', args.port), TCPHandler)
