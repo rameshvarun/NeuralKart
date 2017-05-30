@@ -1,8 +1,12 @@
 --[[ BEGIN CONFIGURATION ]]--
-local FRAMES_TO_PLAY_MIN = 10
+local FRAMES_TO_PLAY_MIN = 30
 local FRAMES_TO_PLAY_MAX = 300
 local FRAMES_TO_SEARCH = 30 * 4
+local TRAIN_PERIOD = 3
 --[[ END CONFIGURATION ]]--
+
+-- Lua doesn't seed the random number generator by default, so we need to seed it with the time.
+math.randomseed(os.time())
 
 local WORKING_DIR = io.popen("cd"):read("*l")
 local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
@@ -27,6 +31,8 @@ local play = loadstring(PLAY_SOURCE)
 local SEARCH_SOURCE = io.open("SearchAI.lua", "rb"):read("*all")
 local search = loadstring(SEARCH_SOURCE)
 
+local iteration = 1
+print(iteration % TRAIN_PERIOD)
 while true do
   savestate.load(START_STATE_FILE)
   local progress = read_progress()
@@ -43,5 +49,11 @@ while true do
     savestate.save(PRE_SEARCH_STATE_FILE)
     search(FRAMES_TO_SEARCH)
     savestate.load(PRE_SEARCH_STATE_FILE)
+  end
+
+  iteration = iteration + 1
+  if iteration % TRAIN_PERIOD == 0 then
+    print("Running train.py...")
+    os.execute("cmd.exe @cmd /c python train.py")
   end
 end
