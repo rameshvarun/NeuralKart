@@ -32,7 +32,6 @@ local SEARCH_SOURCE = io.open("SearchAI.lua", "rb"):read("*all")
 local search = loadstring(SEARCH_SOURCE)
 
 local iteration = 1
-print(iteration % TRAIN_PERIOD)
 while true do
   savestate.load(START_STATE_FILE)
   local progress = read_progress()

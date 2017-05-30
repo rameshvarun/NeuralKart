@@ -11,7 +11,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D
 from keras import optimizers
 from keras import backend as K
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 import matplotlib.pyplot as plt
 
@@ -129,5 +129,6 @@ if __name__ == '__main__':
     model.compile(loss=customized_loss, optimizer=optimizers.adam())
     checkpointer = ModelCheckpoint(
         monitor='val_loss', filepath="weights.hdf5", verbose=1, save_best_only=True, mode='min')
+    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs,
-              shuffle=True, validation_data=(X_val, y_val), callbacks=[checkpointer])
+              shuffle=True, validation_data=(X_val, y_val), callbacks=[checkpointer, earlystopping])
