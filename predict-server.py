@@ -15,6 +15,7 @@ model.load_weights('weights.hdf5')
 
 class TCPHandler(StreamRequestHandler):
     def handle(self):
+        logger.info("Handling a new connection...")
         for line in self.rfile:
             message = str(line.strip(),'utf-8')
             logger.debug(message)

@@ -1,3 +1,7 @@
+local chunk_args = {...}
+local FRAMES_TO_SEARCH = chunk_args[1]
+if FRAMES_TO_SEARCH ~= nil then print("Searching for " .. FRAMES_TO_SEARCH .. " frames.") end
+
 local WORKING_DIR = io.popen("cd"):read("*l")
 local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
 
@@ -31,7 +35,7 @@ angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 -- Read the current progress in the course from memory.
 PROGRESS_ADDRESS = 0x162FD8
 function read_progress() return mainmemory.readfloat(PROGRESS_ADDRESS, true) end
-
+-- Read the velocity of the player from meory.
 VELOCITY_ADDRESS = 0x0F6BBC
 function read_velocity() return mainmemory.readfloat(VELOCITY_ADDRESS, true) end
 
@@ -40,7 +44,8 @@ last_action = 0
 client.unpause()
 client.speedmode(800)
 
-event.onexit(function()
+local exit_guid = nil
+function onexit()
   if steering_file ~= nil then
     steering_file:close()
   end
@@ -49,7 +54,10 @@ event.onexit(function()
   savestate.load(STATE_FILE)
   client.speedmode(100)
   client.unpause_av()
-end)
+
+  event.unregisterbyid(exit_guid)
+end
+exit_guid = event.onexit(onexit)
 
 function eval_actions(actions)
   savestate.load(STATE_FILE)
@@ -96,7 +104,7 @@ end
 
 local recording_frame = 1
 local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
-while true do
+while read_progress() < 3 do
   client.pause_av()
   start_time = os.time()
   savestate.save(STATE_FILE)
@@ -119,8 +127,13 @@ while true do
     joypad.set({["P1 A"] = true})
     joypad.setanalog({["P1 X Axis"] = 127 * action})
     emu.frameadvance()
+
+    if FRAMES_TO_SEARCH ~= nil then FRAMES_TO_SEARCH = FRAMES_TO_SEARCH - 1 end
   end
+
+  -- If we've finished the amount of frames we were asked to search, then stop.
+  if FRAMES_TO_SEARCH ~= nil and FRAMES_TO_SEARCH == 0 then break end
 end
 
-steering_file:close()
-client.pause()
+savestate.save(STATE_FILE)
+onexit()

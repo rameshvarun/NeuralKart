@@ -1,3 +1,7 @@
+local chunk_args = {...}
+local PLAY_FOR_FRAMES = chunk_args[1]
+if PLAY_FOR_FRAMES ~= nil then print("Playing for " .. PLAY_FOR_FRAMES .. " frames.") end
+
 local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
 local SCREENSHOT_FILE = TMP_DIR .. '\\predict-screenshot.png'
 
@@ -14,7 +18,6 @@ client.unpause()
 
 local WAIT_FRAMES = 5
 
-
 outgoing_message, outgoing_message_index = nil, nil
 function request_prediction()
   client.screenshot(SCREENSHOT_FILE)
@@ -25,10 +28,13 @@ request_prediction()
 
 local receive_buffer = ""
 
-event.onexit(function()
+local exit_guid = nil
+function onexit()
   client.pause()
   tcp:close()
-end)
+  event.unregisterbyid(exit_guid)
+end
+exit_guid = event.onexit(onexit)
 
 local current_action = 0
 
@@ -67,4 +73,12 @@ while true do
   joypad.set({["P1 A"] = true})
   joypad.setanalog({["P1 X Axis"] = 127 * current_action})
   emu.frameadvance()
+
+  if PLAY_FOR_FRAMES ~= nil then
+    if PLAY_FOR_FRAMES > 0 then
+      PLAY_FOR_FRAMES = PLAY_FOR_FRAMES - 1
+    elseif PLAY_FOR_FRAMES == 0 then break end
+  end
 end
+
+onexit()
