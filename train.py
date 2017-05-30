@@ -1,6 +1,7 @@
 import glob
 import os
 import hashlib
+import time
 
 from PIL import Image
 
@@ -21,6 +22,7 @@ INPUT_HEIGHT = 66
 INPUT_CHANNELS = 3
 
 VALIDATION_SPLIT = 0.1
+USE_REVERSE_IMAGES = False
 
 def customized_loss(y_true, y_pred, loss='euclidean'):
     # Simply a mean squared error that penalizes large joystick summed values
@@ -83,10 +85,6 @@ def load_training_data():
             im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
             im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
-            im_reverse = im.transpose(Image.FLIP_LEFT_RIGHT)
-            im_reverse_arr = np.frombuffer(im_reverse.tobytes(), dtype=np.uint8)
-            im_reverse_arr = im_reverse_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
-
             if valid:
                 X_train.append(im_arr)
                 y_train.append(steer)
@@ -94,12 +92,17 @@ def load_training_data():
                 X_val.append(im_arr)
                 y_val.append(steer)
 
-            if valid_reversed:
-                X_train.append(im_reverse_arr)
-                y_train.append(-steer)
-            else:
-                X_val.append(im_reverse_arr)
-                y_val.append(-steer)
+            if USE_REVERSE_IMAGES:
+                im_reverse = im.transpose(Image.FLIP_LEFT_RIGHT)
+                im_reverse_arr = np.frombuffer(im_reverse.tobytes(), dtype=np.uint8)
+                im_reverse_arr = im_reverse_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
+
+                if valid_reversed:
+                    X_train.append(im_reverse_arr)
+                    y_train.append(-steer)
+                else:
+                    X_val.append(im_reverse_arr)
+                    y_val.append(-steer)
 
     assert len(X_train) == len(y_train)
     assert len(X_val) == len(y_val)
