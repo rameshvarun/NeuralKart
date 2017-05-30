@@ -58,6 +58,9 @@ def create_model(keep_prob=0.8):
 
     return model
 
+def is_validation_set(string):
+    string_hash = hashlib.md5(string.encode('utf-8')).digest()
+    return int.from_bytes(string_hash[:2], byteorder='big') / 2**16 > VALIDATION_SPLIT
 
 def load_training_data():
     X_train, y_train = [], []
@@ -71,19 +74,30 @@ def load_training_data():
             ("recordings/{}/steering.txt").format(recording)).read().splitlines()]
 
         for file, steer in zip(filenames, steering):
-            name_hash = hashlib.md5(file.encode('utf-8')).digest()
-            prob = int.from_bytes(name_hash[:2], byteorder='big') / 2**16
+            valid = is_validation_set(file)
+            valid_reversed = is_validation_set(file + '_flipped')
 
             im = Image.open(file).resize((INPUT_WIDTH, INPUT_HEIGHT))
             im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
             im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
-            if prob > VALIDATION_SPLIT:
+            im_reverse = im.transpose(Image.FLIP_LEFT_RIGHT)
+            im_reverse_arr = np.frombuffer(im_reverse.tobytes(), dtype=np.uint8)
+            im_reverse_arr = im_reverse_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
+
+            if valid:
                 X_train.append(im_arr)
                 y_train.append(steer)
             else:
                 X_val.append(im_arr)
                 y_val.append(steer)
+
+            if valid_reversed:
+                X_train.append(im_reverse_arr)
+                y_train.append(-steer)
+            else:
+                X_val.append(im_reverse_arr)
+                y_val.append(-steer)
 
     assert len(X_train) == len(y_train)
     assert len(X_val) == len(y_val)
