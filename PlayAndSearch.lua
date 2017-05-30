@@ -13,7 +13,7 @@ savestate.save(START_STATE_FILE)
 local PRE_SEARCH_STATE_FILE = TMP_DIR .. '\\before-search.state'
 
 -- Read the current progress in the course from memory.
-local PROGRESS_ADDRESS = 0x162FD8
+local PROGRESS_ADDRESS = 0x1644D0
 function read_progress() return mainmemory.readfloat(PROGRESS_ADDRESS, true) end
 
 client.unpause()
