@@ -1,3 +1,14 @@
+--[[ BEGIN CONFIGURATION ]]--
+FRAMES_PER_STEP = 30 -- Each step forward lasts this many frames.
+FORWARD_FRAMES = 60
+
+STEERING_BINS = 9 -- The steering is discretized into this many bins.
+SEARCH_DEPTH = 1 -- The depth to search.
+
+PROGRESS_WEIGHT = 1
+VELOCITY_WEIGHT = 0.1
+--[[ END CONFIGURATION ]]--
+
 local chunk_args = {...}
 local FRAMES_TO_SEARCH = chunk_args[1]
 if FRAMES_TO_SEARCH ~= nil then print("Searching for " .. FRAMES_TO_SEARCH .. " frames.") end
@@ -14,20 +25,6 @@ local RECORDING_ID = uuid()
 print("Recording ID:", RECORDING_ID)
 local RECORDING_FOLDER = 'recordings\\search-' .. RECORDING_ID
 os.execute('mkdir ' .. RECORDING_FOLDER)
-
--- Each step forward lasts this many frames.
-FRAMES_PER_STEP = 30
-
-FORWARD_FRAMES = 60
-
--- The steering is discretized into this many bins.
-STEERING_BINS = 9
-
--- The depth to search.
-SEARCH_DEPTH = 1
-
-PROGRESS_WEIGHT = 1
-VELOCITY_WEIGHT = 0.1
 
 angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 
