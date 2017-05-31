@@ -4,7 +4,7 @@ NUM_ANGLES = 51
 USE_MAPPING = true
 --[[ END CONFIGURATION ]]--
 
-local util = loadstring(io.open("util.lua", "rb"):read("*all"))()
+local util = require("util")
 
 assert(NUM_ANGLES % 2 == 1, "NUM_ANGLES must be odd.")
 

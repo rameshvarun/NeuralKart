@@ -2,11 +2,10 @@ local chunk_args = {...}
 local FRAMES_TO_SEARCH = chunk_args[1]
 if FRAMES_TO_SEARCH ~= nil then print("Searching for " .. FRAMES_TO_SEARCH .. " frames.") end
 
-local WORKING_DIR = io.popen("cd"):read("*l")
-local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
+local util = require("util")
 
 -- The save state will be temporarily stored in this file when performing a search.
-local STATE_FILE = TMP_DIR .. '\\root.state'
+local STATE_FILE = util.getTMPDir() .. '\\root.state'
 
 -- Generate a recording id and create a folder for that recording.
 local uuid = require("lualibs.uuid"); uuid.seed()
@@ -32,13 +31,6 @@ VELOCITY_WEIGHT = 0.1
 
 angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 
--- Read the current progress in the course from memory.
-PROGRESS_ADDRESS = 0x1644D0
-function read_progress() return mainmemory.readfloat(PROGRESS_ADDRESS, true) end
--- Read the velocity of the player from meory.
-VELOCITY_ADDRESS = 0x0F6BBC
-function read_velocity() return mainmemory.readfloat(VELOCITY_ADDRESS, true) end
-
 last_action = 0
 
 client.unpause()
@@ -62,7 +54,7 @@ exit_guid = event.onexit(onexit)
 function eval_actions(actions)
   savestate.load(STATE_FILE)
 
-  local start_progress = read_progress()
+  local start_progress = util.readProgress()
 
   for _, action in ipairs(actions) do
     for i=1, FRAMES_PER_STEP do
@@ -78,12 +70,12 @@ function eval_actions(actions)
     emu.frameadvance()
   end
 
-  local end_progress = read_progress()
+  local end_progress = util.readProgress()
 
   if end_progress > start_progress then
-    return PROGRESS_WEIGHT * read_progress() + VELOCITY_WEIGHT * read_velocity()
+    return PROGRESS_WEIGHT * util.readProgress() + VELOCITY_WEIGHT * util.readVelocity()
   else
-    return PROGRESS_WEIGHT * read_progress()
+    return PROGRESS_WEIGHT * util.readProgress()
   end
 end
 
@@ -113,7 +105,7 @@ end
 
 local recording_frame = 1
 local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
-while read_progress() < 3 do
+while util.readProgress() < 3 do
   client.pause_av()
   start_time = os.time()
   savestate.save(STATE_FILE)
