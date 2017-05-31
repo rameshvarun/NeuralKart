@@ -28,8 +28,6 @@ os.execute('mkdir ' .. RECORDING_FOLDER)
 
 angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 
-last_action = 0
-
 client.unpause()
 client.speedmode(800)
 
@@ -76,14 +74,12 @@ function eval_actions(actions)
   end
 end
 
-function best_next_action(actions_so_far, last_action)
+function best_next_action(actions_so_far)
   if #actions_so_far == SEARCH_DEPTH then
     return nil, eval_actions(actions_so_far)
   end
 
   local best_action, best_score = nil, -math.huge
-  -- local left_range = last_action - .5
-  -- local right_range = last_action + .5
   for _, relative_angle in ipairs(angles) do
     next_action = relative_angle
     if next_action >= -1 and next_action <= 1 then
@@ -106,8 +102,7 @@ while util.readProgress() < 3 do
   client.pause_av()
   start_time = os.time()
   savestate.save(STATE_FILE)
-  action, score = best_next_action({}, last_action)
-  last_action = action
+  action, score = best_next_action({})
 
   end_time = os.time()
 
