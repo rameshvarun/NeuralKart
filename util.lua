@@ -36,6 +36,21 @@ function util.linspace(start, vend, divs)
   end
 end
 
+function utils.finiteDifferences(nums)
+  local diffs = {}
+  for i, x in ipairs(nums) do
+    if i > 1 then table.insert(diffs, x - nums[i - 1]) end
+  end
+  return diffs
+end
+
+function utils.bendingEnergy(nums)
+  local accum = 0
+  local second_deriv = utils.finiteDifferences(utils.finiteDifferences(nums))
+  for _, x in ipairs(second_deriv) do accum = accum + x * x end
+  return accum
+end
+
 function util.readPlayerX()
   return mainmemory.readfloat(0x0F69A4, true)
 end
