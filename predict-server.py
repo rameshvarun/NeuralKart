@@ -7,12 +7,19 @@ from socketserver import TCPServer, StreamRequestHandler
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from train import create_model, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
+from train import create_model, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS, INPUT_TIMESTEPS
+
+WAIT_FRAMES = 5
+SNAPSHOT_INTERVAL = 30
+FRAME_DISTANCE = int(SNAPSHOT_INTERVAL / WAIT_FRAMES)
 
 class TCPHandler(StreamRequestHandler):
     def handle(self):
         logger.info("Reloading model weights...")
         model.load_weights('weights.hdf5')
+
+        im_arr_total = np.zeros((INPUT_HEIGHT, INPUT_WIDTH,
+                                 INPUT_CHANNELS * INPUT_TIMESTEPS * FRAME_DISTANCE))
 
         logger.info("Handling a new connection...")
         for line in self.rfile:
@@ -24,9 +31,22 @@ class TCPHandler(StreamRequestHandler):
                 im = im.resize((INPUT_WIDTH, INPUT_HEIGHT))
                 im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
                 im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
-                im_arr = np.expand_dims(im_arr, axis=0)
 
-                prediction = model.predict(im_arr, batch_size=1)[0]
+                # Move one timestep forward
+                im_arr_total = np.concatenate((im_arr_total[:,:,INPUT_CHANNELS:], im_arr), axis=2)
+                prediction_arr = np.zeros((INPUT_HEIGHT, INPUT_WIDTH,
+                                           INPUT_CHANNELS * INPUT_TIMESTEPS))
+
+                logger.info(prediction_arr.shape)
+                logger.info(im_arr_total.shape)
+
+                for i in range(INPUT_TIMESTEPS):
+                    prediction_arr[:,:,i*INPUT_CHANNELS:(i+1)*INPUT_CHANNELS] \
+                        = im_arr_total[:,:,
+                                       i*FRAME_DISTANCE*INPUT_CHANNELS:
+                                       i*FRAME_DISTANCE*INPUT_CHANNELS + INPUT_CHANNELS]
+
+                prediction = model.predict(np.expand_dims(prediction_arr, axis=0), batch_size=1)[0]
                 self.wfile.write((str(prediction[0]) + "\n").encode('utf-8'))
 
 if __name__ == "__main__":

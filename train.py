@@ -20,6 +20,7 @@ OUT_SHAPE = 1
 INPUT_WIDTH = 200
 INPUT_HEIGHT = 66
 INPUT_CHANNELS = 3
+INPUT_TIMESTEPS = 4
 
 VALIDATION_SPLIT = 0.1
 USE_REVERSE_IMAGES = False
@@ -41,7 +42,7 @@ def create_model(keep_prob=0.8):
 
     # NVIDIA's model
     model.add(Conv2D(24, kernel_size=(5, 5), strides=(2, 2), activation='relu',
-                     input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS)))
+                     input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS * INPUT_TIMESTEPS)))
     model.add(Conv2D(36, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
     model.add(Conv2D(48, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
@@ -77,6 +78,9 @@ def load_training_data():
 
         assert len(filenames) == len(steering), "For recording %s, the number of steering values does not match the number of images." % recording
 
+        im_arr_total = np.zeros((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS * INPUT_TIMESTEPS))
+        im_reverse_arr_total = np.zeros((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS * INPUT_TIMESTEPS))
+
         for file, steer in zip(filenames, steering):
             valid = is_validation_set(file)
             valid_reversed = is_validation_set(file + '_flipped')
@@ -85,11 +89,14 @@ def load_training_data():
             im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
             im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
+            # Move one timestep forward
+            im_arr_total = np.concatenate((im_arr, im_arr_total[:,:,:-INPUT_CHANNELS]), axis=2)
+
             if valid:
-                X_train.append(im_arr)
+                X_train.append(im_arr_total)
                 y_train.append(steer)
             else:
-                X_val.append(im_arr)
+                X_val.append(im_arr_total)
                 y_val.append(steer)
 
             if USE_REVERSE_IMAGES:
@@ -97,11 +104,14 @@ def load_training_data():
                 im_reverse_arr = np.frombuffer(im_reverse.tobytes(), dtype=np.uint8)
                 im_reverse_arr = im_reverse_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
+                # Move one timestep forward
+                im_reverse_arr_total = np.concatenate((im_reverse_arr_total[:,:,1:], im_reverse_arr), axis=2)
+
                 if valid_reversed:
-                    X_train.append(im_reverse_arr)
+                    X_train.append(im_reverse_arr_total)
                     y_train.append(-steer)
                 else:
-                    X_val.append(im_reverse_arr)
+                    X_val.append(im_reverse_arr_total)
                     y_val.append(-steer)
 
     assert len(X_train) == len(y_train)
