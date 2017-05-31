@@ -9,6 +9,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D
+from keras.layers.normalization import BatchNormalization
 from keras import optimizers
 from keras import backend as K
 from keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -40,8 +41,8 @@ def create_model(keep_prob=0.8):
     model = Sequential()
 
     # NVIDIA's model
-    model.add(Conv2D(24, kernel_size=(5, 5), strides=(2, 2), activation='relu',
-                     input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS)))
+    model.add(BatchNormalization(input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS)))
+    model.add(Conv2D(24, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
     model.add(Conv2D(36, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
     model.add(Conv2D(48, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
