@@ -29,13 +29,11 @@ request_prediction()
 
 local receive_buffer = ""
 
-local exit_guid = nil
 function onexit()
   client.pause()
   tcp:close()
-  event.unregisterbyid(exit_guid)
 end
-exit_guid = event.onexit(onexit)
+local exit_guid = event.onexit(onexit)
 
 local current_action = 0
 
@@ -83,3 +81,4 @@ while true do
 end
 
 onexit()
+event.unregisterbyid(exit_guid)

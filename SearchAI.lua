@@ -31,7 +31,6 @@ angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
 client.unpause()
 client.speedmode(800)
 
-local exit_guid = nil
 function onexit()
   if steering_file ~= nil then
     steering_file:close()
@@ -41,10 +40,8 @@ function onexit()
   savestate.load(STATE_FILE)
   client.speedmode(100)
   client.unpause_av()
-
-  event.unregisterbyid(exit_guid)
 end
-exit_guid = event.onexit(onexit)
+local exit_guid = event.onexit(onexit)
 
 function eval_actions(actions)
   savestate.load(STATE_FILE)
@@ -129,4 +126,6 @@ while util.readProgress() < 3 do
 end
 
 savestate.save(STATE_FILE)
+
 onexit()
+event.unregisterbyid(exit_guid)
