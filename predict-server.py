@@ -33,12 +33,9 @@ class TCPHandler(StreamRequestHandler):
                 im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
                 # Move one timestep forward
-                im_arr_total = np.concatenate((im_arr_total[:,:,INPUT_CHANNELS:], im_arr), axis=2)
+                im_arr_total = np.concatenate((im_arr, im_arr_total[:,:,:-INPUT_CHANNELS]), axis=2)
                 prediction_arr = np.zeros((INPUT_HEIGHT, INPUT_WIDTH,
                                            INPUT_CHANNELS * INPUT_TIMESTEPS))
-
-                logger.info(prediction_arr.shape)
-                logger.info(im_arr_total.shape)
 
                 for i in range(INPUT_TIMESTEPS):
                     prediction_arr[:,:,i*INPUT_CHANNELS:(i+1)*INPUT_CHANNELS] \
