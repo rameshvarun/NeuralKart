@@ -78,6 +78,8 @@ def load_training_data():
         assert len(filenames) == len(steering), "For recording %s, the number of steering values does not match the number of images." % recording
 
         for file, steer in zip(filenames, steering):
+            assert steer >= -1 and steer <= 1
+
             valid = is_validation_set(file)
             valid_reversed = is_validation_set(file + '_flipped')
 
@@ -125,6 +127,9 @@ if __name__ == '__main__':
     batch_size = 50
 
     model = create_model()
+    
+    if os.path.isfile('weights.hdf5'):
+        model.load_weights('weights.hdf5')
 
     model.compile(loss=customized_loss, optimizer=optimizers.adam())
     checkpointer = ModelCheckpoint(
