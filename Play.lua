@@ -2,8 +2,9 @@ local chunk_args = {...}
 local PLAY_FOR_FRAMES = chunk_args[1]
 if PLAY_FOR_FRAMES ~= nil then print("Playing for " .. PLAY_FOR_FRAMES .. " frames.") end
 
-local TMP_DIR = io.popen("echo %TEMP%"):read("*l")
-local SCREENSHOT_FILE = TMP_DIR .. '\\predict-screenshot.png'
+local util = require("util")
+
+local SCREENSHOT_FILE = util.getTMPDir() .. '\\predict-screenshot.png'
 
 local tcp = require("lualibs.socket").tcp()
 local success, error = tcp:connect('localhost', 36296)
@@ -28,13 +29,11 @@ request_prediction()
 
 local receive_buffer = ""
 
-local exit_guid = nil
 function onexit()
   client.pause()
   tcp:close()
-  event.unregisterbyid(exit_guid)
 end
-exit_guid = event.onexit(onexit)
+local exit_guid = event.onexit(onexit)
 
 local current_action = 0
 
@@ -82,3 +81,4 @@ while true do
 end
 
 onexit()
+event.unregisterbyid(exit_guid)
