@@ -11,14 +11,15 @@ function util.getTMPDir()
   return TMP_DIR
 end
 
+-- Sign, Clamp, and Lerp functions, taken from lume
 function util.sign(x)
-  if x > 0 then return 1
-  elseif x < 0 then return -1
-  else return 0 end
+  return x < 0 and -1 or 1
 end
-
 function util.clamp(x, min, max)
   return x < min and min or (x > max and max or x)
+end
+function util.lerp(a, b, amount)
+  return a + (b - a) * util.clamp(amount, 0, 1)
 end
 
 function util.linspace(start, vend, divs)
@@ -49,6 +50,23 @@ end
 util.VELOCITY_ADDRESS = 0x0F6BBC
 function util.readVelocity()
   return mainmemory.readfloat(util.VELOCITY_ADDRESS, true)
+end
+
+util.STEER_MIN, util.STEER_MAX = -1, 1
+util.JOYSTICK_MIN, util.JOYSTICK_MAX = -128, 127
+
+function util.convertSteerToJoystick(steer, use_mapping)
+  -- Ensure that steer is between -1 and 1
+  steer = util.clamp(steer, util.STEER_MIN, util.STEER_MAX)
+
+  -- If we are using our mapping, map the linaer steer space to the joystick space.
+  if use_mapping == true then
+    steer = util.sign(steer) * math.sqrt(math.abs(steer) * 0.24 + 0.01)
+  end
+
+  -- Map the -1 to 1 steer into an integer -128 to 127 space.
+  local alpha = (steer + 1)/2
+  return math.floor(util.lerp(util.JOYSTICK_MIN, util.JOYSTICK_MAX, alpha))
 end
 
 return util
