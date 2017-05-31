@@ -83,8 +83,6 @@ def load_training_data():
 
         for file, steer in zip(filenames, steering):
             valid = is_validation_set(file)
-            valid_reversed = is_validation_set(file + '_flipped')
-
             im = Image.open(file).resize((INPUT_WIDTH, INPUT_HEIGHT))
             im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
             im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
@@ -100,12 +98,13 @@ def load_training_data():
                 y_val.append(steer)
 
             if USE_REVERSE_IMAGES:
+                valid_reversed = is_validation_set(file + '_flipped')
                 im_reverse = im.transpose(Image.FLIP_LEFT_RIGHT)
                 im_reverse_arr = np.frombuffer(im_reverse.tobytes(), dtype=np.uint8)
                 im_reverse_arr = im_reverse_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
 
                 # Move one timestep forward
-                im_reverse_arr_total = np.concatenate((im_reverse_arr_total[:,:,1:], im_reverse_arr), axis=2)
+                im_reverse_arr_total = np.concatenate((im_reverse_arr, im_reverse_arr_total[:,:,:-INPUT_CHANNELS]), axis=2)
 
                 if valid_reversed:
                     X_train.append(im_reverse_arr_total)
