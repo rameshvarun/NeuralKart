@@ -112,6 +112,8 @@ while util.readProgress() < 3 do
   steering_file:flush()
   recording_frame = recording_frame + 1
 
+  local start_progress = util.readProgress()
+
   client.unpause_av()
   for i=1, FRAMES_PER_STEP do
     joypad.set({["P1 A"] = true})
@@ -119,6 +121,12 @@ while util.readProgress() < 3 do
     emu.frameadvance()
 
     if FRAMES_TO_SEARCH ~= nil then FRAMES_TO_SEARCH = FRAMES_TO_SEARCH - 1 end
+  end
+
+  local end_progress = util.readProgress()
+  if end_progress < start_progress then
+    print("Search AI is stuck!")
+    break
   end
 
   -- If we've finished the amount of frames we were asked to search, then stop.
