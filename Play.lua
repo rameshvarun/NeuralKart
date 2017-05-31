@@ -1,3 +1,8 @@
+--[[ BEGIN CONFIGURATION ]]--
+WAIT_FRAMES = 5
+USE_MAPPING = true
+--[[ END CONFIGURATION ]]--
+
 local chunk_args = {...}
 local PLAY_FOR_FRAMES = chunk_args[1]
 if PLAY_FOR_FRAMES ~= nil then print("Playing for " .. PLAY_FOR_FRAMES .. " frames.") end
@@ -16,8 +21,6 @@ end
 tcp:settimeout(0)
 
 client.unpause()
-
-local WAIT_FRAMES = 5
 
 outgoing_message, outgoing_message_index = nil, nil
 function request_prediction()
@@ -63,14 +66,14 @@ while true do
     current_action = tonumber(message)
     for i=1, WAIT_FRAMES do
       joypad.set({["P1 A"] = true})
-      joypad.setanalog({["P1 X Axis"] = 127 * current_action})
+      joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
       emu.frameadvance()
     end
     request_prediction()
   end
 
   joypad.set({["P1 A"] = true})
-  joypad.setanalog({["P1 X Axis"] = 127 * current_action})
+  joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
   emu.frameadvance()
 
   if PLAY_FOR_FRAMES ~= nil then
