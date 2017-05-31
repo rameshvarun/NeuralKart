@@ -6,7 +6,7 @@ SEARCH_FORWARD_FRAMES = 60
 -- the framerate of image capture constant.
 PLAY_FRAMES = 30
 
-STEERING_BINS = 21 -- The steering is discretized into this many bins.
+STEERING_BINS = 11 -- The steering is discretized into this many bins.
 SEARCH_DEPTH = 1 -- The depth to search.
 
 PROGRESS_WEIGHT = 1
