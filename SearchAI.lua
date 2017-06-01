@@ -9,8 +9,11 @@ PLAY_FRAMES = 30
 STEERING_BINS = 11 -- The steering is discretized into this many bins.
 SEARCH_DEPTH = 1 -- The depth to search.
 
+BENDING_ENERGY_WINDOW = 4
+
 PROGRESS_WEIGHT = 1
 VELOCITY_WEIGHT = 0.1
+BENDING_ENERGY_WEIGHT = 0
 
 USE_MAPPING = true
 --[[ END CONFIGURATION ]]--
@@ -47,7 +50,17 @@ function onexit()
 end
 local exit_guid = event.onexit(onexit)
 
-function eval_actions(actions)
+function eval_actions(actions, actions_history)
+  -- Calculate bending energy, which is a measure of the smoothness of the trajectory.
+  local bending_energy, window = 0, {}
+  for _, action in ipairs(actions) do
+    if #window < BENDING_ENERGY_WINDOW then table.insert(window, 1, action) end
+  end
+  for _, action in ipairs(actions_history) do
+    if #window < BENDING_ENERGY_WINDOW then table.insert(window, 1, action) end
+  end
+  bending_energy = util.bendingEnergy(window)
+
   savestate.load(STATE_FILE)
 
   local start_progress = util.readProgress()
@@ -69,21 +82,21 @@ function eval_actions(actions)
   local end_progress = util.readProgress()
 
   if end_progress > start_progress then
-    return PROGRESS_WEIGHT * util.readProgress() + VELOCITY_WEIGHT * util.readVelocity()
+    return PROGRESS_WEIGHT * util.readProgress() + VELOCITY_WEIGHT * util.readVelocity() - BENDING_ENERGY_WEIGHT * bending_energy
   else
-    return PROGRESS_WEIGHT * util.readProgress()
+    return PROGRESS_WEIGHT * (util.readProgress() - 3)
   end
 end
 
-function best_next_action(actions_so_far)
+function best_next_action(actions_so_far, actions_history)
   if #actions_so_far == SEARCH_DEPTH then
-    return nil, eval_actions(actions_so_far)
+    return nil, eval_actions(actions_so_far, actions_history)
   end
 
   local best_action, best_score = nil, -math.huge
   for action in util.linspace(-1, 1, STEERING_BINS) do
     table.insert(actions_so_far, action)
-    local _, score = best_next_action(actions_so_far, action)
+    local _, score = best_next_action(actions_so_far, actions_history)
     if score > best_score then
       best_score = score
       best_action = action
@@ -96,15 +109,17 @@ end
 
 local recording_frame = 1
 local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
+local actions_history = {}
 while util.readProgress() < 3 do
   client.pause_av()
   start_time = os.time()
   savestate.save(STATE_FILE)
-  action, score = best_next_action({})
+  action, score = best_next_action({}, actions_history)
 
   end_time = os.time()
 
   print("Action:", action, "Score:", score, "Time:", end_time - start_time)
+  table.insert(actions_history, action)
 
   savestate.load(STATE_FILE)
 
