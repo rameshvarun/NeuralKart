@@ -36,7 +36,7 @@ function util.linspace(start, vend, divs)
   end
 end
 
-function utils.finiteDifferences(nums)
+function util.finiteDifferences(nums)
   local diffs = {}
   for i, x in ipairs(nums) do
     if i > 1 then table.insert(diffs, x - nums[i - 1]) end
@@ -44,9 +44,9 @@ function utils.finiteDifferences(nums)
   return diffs
 end
 
-function utils.bendingEnergy(nums)
+function util.bendingEnergy(nums)
   local accum = 0
-  local second_deriv = utils.finiteDifferences(utils.finiteDifferences(nums))
+  local second_deriv = util.finiteDifferences(util.finiteDifferences(nums))
   for _, x in ipairs(second_deriv) do accum = accum + x * x end
   return accum
 end
