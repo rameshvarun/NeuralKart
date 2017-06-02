@@ -67,6 +67,12 @@ function util.readVelocity()
   return mainmemory.readfloat(util.VELOCITY_ADDRESS, true)
 end
 
+-- The current match timer.
+util.TIMER_ADDRESS = 0x0DC598
+function util.readTimer()
+  return mainmemory.readfloat(util.TIMER_ADDRESS, true)
+end
+
 util.STEER_MIN, util.STEER_MAX = -1, 1
 util.JOYSTICK_MIN, util.JOYSTICK_MAX = -128, 127
 
