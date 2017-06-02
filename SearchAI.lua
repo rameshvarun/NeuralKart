@@ -1,6 +1,6 @@
 --[[ BEGIN CONFIGURATION ]]--
 SEARCH_STEP_FRAMES = 30 -- Each step forward lasts this many frames.
-SEARCH_FORWARD_FRAMES = 60
+SEARCH_FORWARD_FRAMES = 75
 
 -- When you actually execute a move, play for this many frames. This should stay at 30 to keep
 -- the framerate of image capture constant.
@@ -118,7 +118,7 @@ while util.readProgress() < 3 do
 
   end_time = os.time()
 
-  print("Action:", action, "Score:", score, "Time:", end_time - start_time)
+  --print("Action:", action, "Score:", score, "Time:", end_time - start_time)
   table.insert(actions_history, action)
 
   savestate.load(STATE_FILE)
