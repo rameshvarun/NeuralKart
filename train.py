@@ -18,8 +18,15 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 import matplotlib.pyplot as plt
 
-TRACK_CODES = set(map(lambda s: s.lower(), ["ALL", "MR","CM","BC","BB","YV","FS","KTB","RRy","LR","MMF","TT","KD","SL","RRd","WS",
-  "BF","SS","DD","DK","BD","TC"]))
+TRACK_CODES = set(map(lambda s: s.lower(),
+    ["ALL", "MR","CM","BC","BB","YV","FS","KTB","RRy","LR","MMF","TT","KD","SL","RRd","WS",
+     "BF","SS","DD","DK","BD","TC"]))
+
+def is_valid_track_code(value):
+    value = value.lower()
+    if value not in TRACK_CODES:
+        raise argparse.ArgumentTypeError("%s is an invalid track code" % value)
+    return value
 
 OUT_SHAPE = 1
 
@@ -128,13 +135,11 @@ def load_training_data(track):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('track')
+    parser.add_argument('track', type=is_valid_track_code)
     args = parser.parse_args()
 
-    assert args.track.lower() in TRACK_CODES
-
     # Load Training Data
-    X_train, y_train, X_val, y_val = load_training_data(args.track.lower())
+    X_train, y_train, X_val, y_val = load_training_data(args.track)
 
     print(X_train.shape[0], 'training samples.')
     print(X_val.shape[0], 'validation samples.')
@@ -146,7 +151,7 @@ if __name__ == '__main__':
     model = create_model()
 
     mkdir_p("weights")
-    weights_file = "weights/{}.hdf5".format(args.track.lower())
+    weights_file = "weights/{}.hdf5".format(args.track)
     if os.path.isfile(weights_file):
         model.load_weights(weights_file)
 

@@ -7,12 +7,12 @@ from socketserver import TCPServer, StreamRequestHandler
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from train import create_model, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
+from train import create_model, is_valid_track_code, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
 
 class TCPHandler(StreamRequestHandler):
     def handle(self):
         logger.info("Reloading model weights...")
-        model.load_weights('weights.hdf5')
+        model.load_weights(weights_file)
 
         logger.info("Handling a new connection...")
         for line in self.rfile:
@@ -31,6 +31,7 @@ class TCPHandler(StreamRequestHandler):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Start a prediction server that other apps will call into.')
+    parser.add_argument('track', type=is_valid_track_code)
     parser.add_argument('-p', '--port', type=int, help='Port number', default=36296)
     parser.add_argument('-c', '--cpu', action='store_true', help='Force Tensorflow to use the CPU.', default=False)
     args = parser.parse_args()
@@ -41,7 +42,9 @@ if __name__ == "__main__":
 
     logger.info("Loading model...")
     model = create_model(keep_prob=1)
-    model.load_weights('weights.hdf5')
+
+    weights_file = 'weights/{}.hdf5'.format(args.track)
+    model.load_weights(weights_file)
 
     logger.info("Starting server...")
     server = TCPServer(('0.0.0.0', args.port), TCPHandler)
