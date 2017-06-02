@@ -1,8 +1,8 @@
 --[[ BEGIN CONFIGURATION ]]--
 local FRAMES_TO_PLAY_MIN = 30
-local FRAMES_TO_PLAY_MAX = 200
+local FRAMES_TO_PLAY_MAX = 60
 local FRAMES_TO_SEARCH = 30 * 4
-local TRAIN_PERIOD = 3
+local TRAIN_PERIOD = 2
 --[[ END CONFIGURATION ]]--
 
 local util = require("util")
@@ -29,6 +29,10 @@ while true do
   local progress = util.readProgress()
 
   while util.readProgress() < 3 do
+    savestate.save(PRE_SEARCH_STATE_FILE)
+    search(FRAMES_TO_SEARCH)
+    savestate.load(PRE_SEARCH_STATE_FILE)
+    
     play(math.random(FRAMES_TO_PLAY_MIN, FRAMES_TO_PLAY_MAX))
     if util.readProgress() > progress then
       progress = util.readProgress()
@@ -37,9 +41,7 @@ while true do
       break
     end
 
-    savestate.save(PRE_SEARCH_STATE_FILE)
-    search(FRAMES_TO_SEARCH)
-    savestate.load(PRE_SEARCH_STATE_FILE)
+    
   end
 
   iteration = iteration + 1
