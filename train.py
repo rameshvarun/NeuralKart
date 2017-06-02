@@ -37,15 +37,19 @@ def customized_loss(y_true, y_pred, loss='euclidean'):
     return val
 
 
-def create_model(keep_prob=0.8):
+def create_model(keep_prob=0.6):
     model = Sequential()
 
     # NVIDIA's model
     model.add(BatchNormalization(input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS)))
     model.add(Conv2D(24, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(36, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(48, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
     model.add(Flatten())
     model.add(Dense(1164, activation='relu'))
@@ -132,7 +136,7 @@ if __name__ == '__main__':
     if os.path.isfile('weights.hdf5'):
         model.load_weights('weights.hdf5')
 
-    model.compile(loss=customized_loss, optimizer=optimizers.adam())
+    model.compile(loss=customized_loss, optimizer=optimizers.adam(lr=0.0001))
     checkpointer = ModelCheckpoint(
         monitor='val_loss', filepath="weights.hdf5", verbose=1, save_best_only=True, mode='min')
     earlystopping = EarlyStopping(monitor='val_loss', patience=20)
