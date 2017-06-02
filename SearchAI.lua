@@ -38,7 +38,7 @@ os.execute('mkdir recordings\\' .. course .. '\\' .. mode)
 
 local RECORDING_ID = uuid()
 print("Recording ID:", RECORDING_ID)
-local RECORDING_FOLDER = 'mkdir recordings\\' .. course .. '\\' .. mode .. '\\search-' .. RECORDING_ID
+local RECORDING_FOLDER = 'recordings\\' .. course .. '\\' .. mode .. '\\search-' .. RECORDING_ID
 os.execute('mkdir ' .. RECORDING_FOLDER)
 
 client.unpause()

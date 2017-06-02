@@ -2,6 +2,8 @@ import glob
 import os
 import hashlib
 import time
+import argparse
+from mkdir_p import mkdir_p
 
 from PIL import Image
 
@@ -15,6 +17,9 @@ from keras import backend as K
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 import matplotlib.pyplot as plt
+
+TRACK_CODES = set(map(lambda s: s.lower(), ["ALL", "MR","CM","BC","BB","YV","FS","KTB","RRy","LR","MMF","TT","KD","SL","RRd","WS",
+  "BF","SS","DD","DK","BD","TC"]))
 
 OUT_SHAPE = 1
 
@@ -65,16 +70,21 @@ def is_validation_set(string):
     string_hash = hashlib.md5(string.encode('utf-8')).digest()
     return int.from_bytes(string_hash[:2], byteorder='big') / 2**16 > VALIDATION_SPLIT
 
-def load_training_data():
+def load_training_data(track):
     X_train, y_train = [], []
     X_val, y_val = [], []
 
-    for recording in os.listdir('recordings'):
-        filenames = list(glob.iglob('recordings/{}/*.png'.format(recording)))
+    if track == 'all':
+        recordings = glob.iglob("recordings/*/*/*")
+    else:
+        recordings = glob.iglob("recordings/{}/*/*".format(track))
+
+    for recording in recordings:
+        filenames = list(glob.iglob('{}/*.png'.format(recording)))
         filenames.sort(key=lambda f: int(os.path.basename(f)[:-4]))
 
         steering = [float(line) for line in open(
-            ("recordings/{}/steering.txt").format(recording)).read().splitlines()]
+            ("{}/steering.txt").format(recording)).read().splitlines()]
 
         assert len(filenames) == len(steering), "For recording %s, the number of steering values does not match the number of images." % recording
 
@@ -117,8 +127,14 @@ def load_training_data():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('track')
+    args = parser.parse_args()
+
+    assert args.track.lower() in TRACK_CODES
+
     # Load Training Data
-    X_train, y_train, X_val, y_val = load_training_data()
+    X_train, y_train, X_val, y_val = load_training_data(args.track.lower())
 
     print(X_train.shape[0], 'training samples.')
     print(X_val.shape[0], 'validation samples.')
@@ -128,13 +144,15 @@ if __name__ == '__main__':
     batch_size = 50
 
     model = create_model()
-    
-    if os.path.isfile('weights.hdf5'):
-        model.load_weights('weights.hdf5')
+
+    mkdir_p("weights")
+    weights_file = "weights/{}.hdf5".format(args.track.lower())
+    if os.path.isfile(weights_file):
+        model.load_weights(weights_file)
 
     model.compile(loss=customized_loss, optimizer=optimizers.adam())
     checkpointer = ModelCheckpoint(
-        monitor='val_loss', filepath="weights.hdf5", verbose=1, save_best_only=True, mode='min')
+        monitor='val_loss', filepath=weights_file, verbose=1, save_best_only=True, mode='min')
     earlystopping = EarlyStopping(monitor='val_loss', patience=20)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs,
               shuffle=True, validation_data=(X_val, y_val), callbacks=[checkpointer, earlystopping])
