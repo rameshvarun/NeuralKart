@@ -1,12 +1,21 @@
 --[[ BEGIN CONFIGURATION ]]--
-FRAMES_PER_STEP = 30 -- Each step forward lasts this many frames.
-FORWARD_FRAMES = 60
+SEARCH_STEP_FRAMES = 30 -- Each step forward lasts this many frames.
+SEARCH_FORWARD_FRAMES = 60
 
-STEERING_BINS = 9 -- The steering is discretized into this many bins.
+-- When you actually execute a move, play for this many frames. This should stay at 30 to keep
+-- the framerate of image capture constant.
+PLAY_FRAMES = 30
+
+STEERING_BINS = 11 -- The steering is discretized into this many bins.
 SEARCH_DEPTH = 1 -- The depth to search.
+
+BENDING_ENERGY_WINDOW = 4
 
 PROGRESS_WEIGHT = 1
 VELOCITY_WEIGHT = 0.1
+BENDING_ENERGY_WEIGHT = 0
+
+USE_MAPPING = true
 --[[ END CONFIGURATION ]]--
 
 local chunk_args = {...}
@@ -26,8 +35,6 @@ print("Recording ID:", RECORDING_ID)
 local RECORDING_FOLDER = 'recordings\\search-' .. RECORDING_ID
 os.execute('mkdir ' .. RECORDING_FOLDER)
 
-angles = {-0.5, -0.4, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.4, 0.5}
-
 client.unpause()
 client.speedmode(800)
 
@@ -43,20 +50,30 @@ function onexit()
 end
 local exit_guid = event.onexit(onexit)
 
-function eval_actions(actions)
+function eval_actions(actions, actions_history)
+  -- Calculate bending energy, which is a measure of the smoothness of the trajectory.
+  local bending_energy, window = 0, {}
+  for _, action in ipairs(actions) do
+    if #window < BENDING_ENERGY_WINDOW then table.insert(window, 1, action) end
+  end
+  for _, action in ipairs(actions_history) do
+    if #window < BENDING_ENERGY_WINDOW then table.insert(window, 1, action) end
+  end
+  bending_energy = util.bendingEnergy(window)
+
   savestate.load(STATE_FILE)
 
   local start_progress = util.readProgress()
 
   for _, action in ipairs(actions) do
-    for i=1, FRAMES_PER_STEP do
+    for i=1, SEARCH_STEP_FRAMES do
       joypad.set({["P1 A"] = true})
-      joypad.setanalog({["P1 X Axis"] = 127 * action})
+      joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(action, USE_MAPPING)})
       emu.frameadvance()
     end
   end
 
-  for i=1, FORWARD_FRAMES do
+  for i=1, SEARCH_FORWARD_FRAMES do
     joypad.set({["P1 A"] = true})
     joypad.setanalog({["P1 X Axis"] = 0})
     emu.frameadvance()
@@ -65,29 +82,26 @@ function eval_actions(actions)
   local end_progress = util.readProgress()
 
   if end_progress > start_progress then
-    return PROGRESS_WEIGHT * util.readProgress() + VELOCITY_WEIGHT * util.readVelocity()
+    return PROGRESS_WEIGHT * util.readProgress() + VELOCITY_WEIGHT * util.readVelocity() - BENDING_ENERGY_WEIGHT * bending_energy
   else
-    return PROGRESS_WEIGHT * util.readProgress()
+    return PROGRESS_WEIGHT * (util.readProgress() - 3)
   end
 end
 
-function best_next_action(actions_so_far)
+function best_next_action(actions_so_far, actions_history)
   if #actions_so_far == SEARCH_DEPTH then
-    return nil, eval_actions(actions_so_far)
+    return nil, eval_actions(actions_so_far, actions_history)
   end
 
   local best_action, best_score = nil, -math.huge
-  for _, relative_angle in ipairs(angles) do
-    next_action = relative_angle
-    if next_action >= -1 and next_action <= 1 then
-      table.insert(actions_so_far, next_action)
-      local _, score = best_next_action(actions_so_far, next_action)
-      if score > best_score then
-        best_score = score
-        best_action = next_action
-      end
-      table.remove(actions_so_far)
+  for action in util.linspace(-1, 1, STEERING_BINS) do
+    table.insert(actions_so_far, action)
+    local _, score = best_next_action(actions_so_far, actions_history)
+    if score > best_score then
+      best_score = score
+      best_action = action
     end
+    table.remove(actions_so_far)
   end
 
   return best_action, best_score
@@ -95,15 +109,17 @@ end
 
 local recording_frame = 1
 local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
+local actions_history = {}
 while util.readProgress() < 3 do
   client.pause_av()
   start_time = os.time()
   savestate.save(STATE_FILE)
-  action, score = best_next_action({})
+  action, score = best_next_action({}, actions_history)
 
   end_time = os.time()
 
   print("Action:", action, "Score:", score, "Time:", end_time - start_time)
+  table.insert(actions_history, action)
 
   savestate.load(STATE_FILE)
 
@@ -115,9 +131,9 @@ while util.readProgress() < 3 do
   local start_progress = util.readProgress()
 
   client.unpause_av()
-  for i=1, FRAMES_PER_STEP do
+  for i=1, PLAY_FRAMES do
     joypad.set({["P1 A"] = true})
-    joypad.setanalog({["P1 X Axis"] = 127 * action})
+    joypad.setanalog({["P1 X Axis"] =  util.convertSteerToJoystick(action, USE_MAPPING)})
     emu.frameadvance()
 
     if FRAMES_TO_SEARCH ~= nil then FRAMES_TO_SEARCH = FRAMES_TO_SEARCH - 1 end
