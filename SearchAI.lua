@@ -27,12 +27,18 @@ local util = require("util")
 -- The save state will be temporarily stored in this file when performing a search.
 local STATE_FILE = util.getTMPDir() .. '\\root.state'
 
+local mode = util.readMode()
+local course = util.readCourse()
+
 -- Generate a recording id and create a folder for that recording.
 local uuid = require("lualibs.uuid"); uuid.seed()
 os.execute('mkdir recordings')
+os.execute('mkdir recordings\\' .. course)
+os.execute('mkdir recordings\\' .. course .. '\\' .. mode)
+
 local RECORDING_ID = uuid()
 print("Recording ID:", RECORDING_ID)
-local RECORDING_FOLDER = 'recordings\\search-' .. RECORDING_ID
+local RECORDING_FOLDER = 'mkdir recordings\\' .. course .. '\\' .. mode .. '\\search-' .. RECORDING_ID
 os.execute('mkdir ' .. RECORDING_FOLDER)
 
 client.unpause()
