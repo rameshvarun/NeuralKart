@@ -1,15 +1,15 @@
+# NeuralKart 
 
-# Set-up
+## Set-up
 
-## Install Python Dependencies
+### Install Python Dependencies
 
-```bash
-pip install --user Pillow
-```
+- Tensorflow
+- Keras
+- Pillow
 
-## BizHawk
+### BizHawk
 
+- Get BizHawl
 
-## MarioKart 64
-
-Get the MarioKart 64 ROM and place it in this directory as mariokart64.n64
+## Instructions
