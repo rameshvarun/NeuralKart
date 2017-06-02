@@ -14,6 +14,8 @@ event.onexit(function()
   savestate.load(START_STATE_FILE)
 end)
 
+print("Mode:", util.readMode(), "Course:", util.readCourse())
+
 for i=1, 10 do
     -- Start from the beginning and play.
     savestate.load(START_STATE_FILE)

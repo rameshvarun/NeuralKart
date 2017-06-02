@@ -73,6 +73,23 @@ function util.readTimer()
   return mainmemory.readfloat(util.TIMER_ADDRESS, true)
 end
 
+-- The current mode.
+util.MODES = {"GP", "TT", "VS", "BT"}
+util.MODE_ADDRESS = 0x0DC53F
+function util.readMode()
+  local i = mainmemory.read_u8(util.MODE_ADDRESS)
+  return util.MODES[i + 1]
+end
+
+util.COURSES = {"MR","CM","BC","BB","YV","FS","KTB","RRy","LR","MMF","TT","KD","SL","RRd","WS",
+  "BF","SS","DD","DK","BD","TC"}
+util.COURSE_ADDRESS = 0x0DC5A1
+function util.readCourse()
+  local i = mainmemory.read_u8(util.COURSE_ADDRESS)
+  return util.COURSES[i + 1]
+end
+
+
 util.STEER_MIN, util.STEER_MAX = -1, 1
 util.JOYSTICK_MIN, util.JOYSTICK_MAX = -128, 127
 
