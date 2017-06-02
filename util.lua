@@ -75,6 +75,7 @@ end
 
 -- The current mode.
 util.MODES = {"GP", "TT", "VS", "BT"}
+util.MODE_NAMES = {"Grand Prix", "Time Trial", "VS.", "Battle"}
 util.MODE_ADDRESS = 0x0DC53F
 function util.readMode()
   local i = mainmemory.read_u8(util.MODE_ADDRESS)
@@ -83,6 +84,10 @@ end
 
 util.COURSES = {"MR","CM","BC","BB","YV","FS","KTB","RRy","LR","MMF","TT","KD","SL","RRd","WS",
   "BF","SS","DD","DK","BD","TC"}
+util.COURSE_NAMES = {"Mario Raceway", "Choco Mountain", "Bowser's Castle", "Banshee Boardwalk",
+  "Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway", "Luigi Raceway",
+  "Moo Moo Farm", "Toad's Turnpike", "Kalimari Desert", "Sherbert Land", "Rainbow Road",
+  "Wario Raceway", "Block Fort", "Skyscraper", "Double Deck", "D.K.'s Jungle Parkway", "Big Donut", "TC"}
 util.COURSE_ADDRESS = 0x0DC5A1
 function util.readCourse()
   local i = mainmemory.read_u8(util.COURSE_ADDRESS)

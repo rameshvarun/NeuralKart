@@ -19,6 +19,9 @@ if not success then
   return
 end
 
+local course = util.readCourse()
+tcp:send("COURSE:" .. course .. "\n")
+
 tcp:settimeout(0)
 
 client.unpause()
