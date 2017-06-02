@@ -4,3 +4,4 @@ recordings/
 .idea
 weights.hdf5
 *.log
+states/
