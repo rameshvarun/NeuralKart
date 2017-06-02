@@ -21,7 +21,7 @@ OUT_SHAPE = 1
 INPUT_WIDTH = 200
 INPUT_HEIGHT = 66
 INPUT_CHANNELS = 3
-INPUT_TIMESTEPS = 2
+INPUT_TIMESTEPS = 1
 
 VALIDATION_SPLIT = 0.1
 USE_REVERSE_IMAGES = False
@@ -44,9 +44,13 @@ def create_model(keep_prob=0.8):
     # NVIDIA's model
     model.add(BatchNormalization(input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS * INPUT_TIMESTEPS)))
     model.add(Conv2D(24, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(36, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(48, kernel_size=(5, 5), strides=(2, 2), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(BatchNormalization())
     model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
     model.add(Flatten())
     model.add(Dense(1164, activation='relu'))
