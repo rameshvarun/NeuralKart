@@ -17,15 +17,9 @@ function util.getTMPDir()
 end
 
 -- Sign, Clamp, and Lerp functions, taken from lume
-function util.sign(x)
-  return x < 0 and -1 or 1
-end
-function util.clamp(x, min, max)
-  return x < min and min or (x > max and max or x)
-end
-function util.lerp(a, b, amount)
-  return a + (b - a) * util.clamp(amount, 0, 1)
-end
+function util.sign(x) return x < 0 and -1 or 1 end
+function util.clamp(x, min, max) return x < min and min or (x > max and max or x) end
+function util.lerp(a, b, amount) return a + (b - a) * util.clamp(amount, 0, 1) end
 
 function util.linspace(start, vend, divs)
   local val = start
