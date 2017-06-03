@@ -1,13 +1,20 @@
 import sys, time, logging, os, argparse
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageGrab
 from socketserver import TCPServer, StreamRequestHandler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from train import create_model, is_valid_track_code, INPUT_WIDTH, INPUT_HEIGHT, INPUT_CHANNELS
+
+def prepare_image(im):
+    im = im.resize((INPUT_WIDTH, INPUT_HEIGHT))
+    im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
+    im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
+    im_arr = np.expand_dims(im_arr, axis=0)
+    return im_arr
 
 class TCPHandler(StreamRequestHandler):
     def handle(self):
@@ -27,14 +34,14 @@ class TCPHandler(StreamRequestHandler):
                 logger.info("Loading {}...".format(weights_file))
                 model.load_weights(weights_file)
 
+            if message.startswith("PREDICTFROMCLIPBOARD"):
+                im = ImageGrab.grabclipboard()
+                prediction = model.predict(prepare_image(im), batch_size=1)[0]
+                self.wfile.write((str(prediction[0]) + "\n").encode('utf-8'))
+
             if message.startswith("PREDICT:"):
                 im = Image.open(message[8:])
-                im = im.resize((INPUT_WIDTH, INPUT_HEIGHT))
-                im_arr = np.frombuffer(im.tobytes(), dtype=np.uint8)
-                im_arr = im_arr.reshape((INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNELS))
-                im_arr = np.expand_dims(im_arr, axis=0)
-
-                prediction = model.predict(im_arr, batch_size=1)[0]
+                prediction = model.predict(prepare_image(im), batch_size=1)[0]
                 self.wfile.write((str(prediction[0]) + "\n").encode('utf-8'))
 
 if __name__ == "__main__":

@@ -7,9 +7,13 @@ This module can also be called as a function, in which case the first argument i
 frames to play for.
 ]]--
 
-
 --[[ BEGIN CONFIGURATION ]]--
-WAIT_FRAMES = 5 -- How many frames to wait before sending a new prediction request.
+USE_CLIPBOARD = true -- Use the clipboard to send screenshots to the predict server.
+
+--[[ How many frames to wait before sending a new prediction request. If you're using a file, you
+may want to consider adding some frames here. ]]--
+WAIT_FRAMES = 0
+
 USE_MAPPING = true -- Whether or not to use input remapping.
 CHECK_PROGRESS_EVERY = 300 -- Check progress after this many frames to detect if we get stuck.
 --[[ END CONFIGURATION ]]--
@@ -40,8 +44,13 @@ client.unpause()
 
 outgoing_message, outgoing_message_index = nil, nil
 function request_prediction()
-  client.screenshot(SCREENSHOT_FILE)
-  outgoing_message = "PREDICT:" .. SCREENSHOT_FILE .. "\n"
+  if USE_CLIPBOARD then
+    client.screenshottoclipboard()
+    outgoing_message = "PREDICTFROMCLIPBOARD\n"
+  else
+    client.screenshot(SCREENSHOT_FILE)
+    outgoing_message = "PREDICT:" .. SCREENSHOT_FILE .. "\n"
+  end
   outgoing_message_index = 1
 end
 request_prediction()
