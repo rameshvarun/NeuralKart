@@ -67,17 +67,17 @@ while true do
     --savestate.save(POST_SEARCH_STATE_FILE2)
 
     savestate.load(PRE_SEARCH_STATE_FILE)
-   
+
     search(FRAMES_TO_SEARCH)
     savestate.save(POST_SEARCH_STATE_FILE1)
     savestate.load(PRE_SEARCH_STATE_FILE)
 
-    
+
   end
 
   iteration = iteration + 1
   if iteration % TRAIN_PERIOD == 0 then
     print("Running train.py...")
-    os.execute("cmd.exe @cmd /c python train.py " .. course)
+    os.execute("cmd.exe @cmd /c python3 train.py " .. course)
   end
 end
