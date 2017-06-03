@@ -56,6 +56,11 @@ local current_action = 0
 local frame = 1
 local max_progress = util.readProgress()
 
+function draw_info()
+  gui.drawBox(40, 240 - 30, 320 - 40, 240 - 20, none, 0x60FFFFFF)
+  gui.drawBox(160 + current_action*120 - 5, 240 - 40, 160 + current_action*120 + 5, 240 - 10, none, 0xFFFF0000)
+end
+
 while util.readProgress() < 3 do
   -- Process the outgoing message.
   if outgoing_message ~= nil then
@@ -84,6 +89,7 @@ while util.readProgress() < 3 do
       joypad.set({["P1 A"] = true})
       joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
       emu.frameadvance()
+      draw_info()
     end
     request_prediction()
   end
@@ -91,6 +97,7 @@ while util.readProgress() < 3 do
   joypad.set({["P1 A"] = true})
   joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
   emu.frameadvance()
+  draw_info()
 
   if PLAY_FOR_FRAMES ~= nil then
     if PLAY_FOR_FRAMES > 0 then PLAY_FOR_FRAMES = PLAY_FOR_FRAMES - 1
