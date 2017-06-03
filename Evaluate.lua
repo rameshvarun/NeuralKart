@@ -1,3 +1,11 @@
+--[[
+Evaluate.lua
+
+This script is used to evaluate how good an AI is on a track. It plays the AI for a
+configurable number of runs, recording the finish time. It reports DNF if the AI fails to
+finish the race and gets stuck.
+]]--
+
 --[[ BEGIN CONFIGURATION ]]--
 local NUM_RUNS = 10
 --[[ END CONFIGURATION ]]--

@@ -1,6 +1,16 @@
+--[[
+Play.lua
+
+This script is used to actually play the Convolutional AI on a track. It asynchronously communicates
+with predict-server.py over a TCP socket. The message protocol is a simple, line-oriented feed.
+This module can also be called as a function, in which case the first argument is the number of
+frames to play for.
+]]--
+
+
 --[[ BEGIN CONFIGURATION ]]--
-WAIT_FRAMES = 5
-USE_MAPPING = true
+WAIT_FRAMES = 5 -- How many frames to wait before sending a new prediction request.
+USE_MAPPING = true -- Whether or not to use input remapping.
 CHECK_PROGRESS_EVERY = 300 -- Check progress after this many frames to detect if we get stuck.
 --[[ END CONFIGURATION ]]--
 
