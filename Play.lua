@@ -29,6 +29,8 @@ if not success then
   return
 end
 
+client.setscreenshotosd(false)
+
 local course = util.readCourse()
 tcp:send("COURSE:" .. course .. "\n")
 
@@ -56,9 +58,16 @@ local current_action = 0
 local frame = 1
 local max_progress = util.readProgress()
 
+BOX_CENTER_X, BOX_CENTER_Y = 160, 215
+BOX_WIDTH, BOX_HEIGHT = 100, 4
+SLIDER_WIDTH, SLIDER_HIEGHT = 4, 16
 function draw_info()
-  gui.drawBox(40, 240 - 30, 320 - 40, 240 - 20, none, 0x60FFFFFF)
-  gui.drawBox(160 + current_action*120 - 5, 240 - 40, 160 + current_action*120 + 5, 240 - 10, none, 0xFFFF0000)
+  gui.drawBox(BOX_CENTER_X - BOX_WIDTH / 2, BOX_CENTER_Y - BOX_HEIGHT / 2,
+              BOX_CENTER_X + BOX_WIDTH / 2, BOX_CENTER_Y + BOX_HEIGHT / 2,
+              none, 0x60FFFFFF)
+  gui.drawBox(BOX_CENTER_X + current_action*(BOX_WIDTH / 2) - SLIDER_WIDTH / 2, BOX_CENTER_Y - SLIDER_HIEGHT / 2,
+              BOX_CENTER_X + current_action*(BOX_WIDTH / 2) + SLIDER_WIDTH / 2, BOX_CENTER_Y + SLIDER_HIEGHT / 2,
+              none, 0xFFFF0000)
 end
 
 while util.readProgress() < 3 do
@@ -88,16 +97,16 @@ while util.readProgress() < 3 do
     for i=1, WAIT_FRAMES do
       joypad.set({["P1 A"] = true})
       joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
-      emu.frameadvance()
       draw_info()
+      emu.frameadvance()
     end
     request_prediction()
   end
 
   joypad.set({["P1 A"] = true})
   joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
-  emu.frameadvance()
   draw_info()
+  emu.frameadvance()
 
   if PLAY_FOR_FRAMES ~= nil then
     if PLAY_FOR_FRAMES > 0 then PLAY_FOR_FRAMES = PLAY_FOR_FRAMES - 1
