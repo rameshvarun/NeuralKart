@@ -20,6 +20,8 @@ USE_MAPPING = true
 
 local chunk_args = {...}
 local FRAMES_TO_SEARCH = chunk_args[1]
+local RECORDING_FOLDER, RECORDING_START_FRAME = chunk_args[2], chunk_args[3]
+
 if FRAMES_TO_SEARCH ~= nil then print("Searching for " .. FRAMES_TO_SEARCH .. " frames.") end
 
 local util = require("util")
@@ -30,16 +32,21 @@ local STATE_FILE = util.getTMPDir() .. '\\root.state'
 local mode = util.readMode()
 local course = util.readCourse()
 
--- Generate a recording id and create a folder for that recording.
-local uuid = require("lualibs.uuid"); uuid.seed()
-os.execute('mkdir recordings')
-os.execute('mkdir recordings\\' .. course)
-os.execute('mkdir recordings\\' .. course .. '\\' .. mode)
+if RECORDING_FOLDER == nil then
+  -- Ensure that there is a recoridngs folder, as well as a subfolder for the current track-mode combination.
+  os.execute('mkdir recordings\\' .. course .. '\\' .. mode)
 
-local RECORDING_ID = uuid()
-print("Recording ID:", RECORDING_ID)
-local RECORDING_FOLDER = 'recordings\\' .. course .. '\\' .. mode .. '\\search-' .. RECORDING_ID
-os.execute('mkdir ' .. RECORDING_FOLDER)
+  -- Generate a recording id.
+  local RECORDING_ID = util.generateUUID()
+  print("Recording ID:", RECORDING_ID)
+
+  -- Create a folder for this recording.
+  RECORDING_FOLDER = 'recordings\\' .. course .. '\\' .. mode .. '\\search-' .. RECORDING_ID
+  os.execute('mkdir ' .. RECORDING_FOLDER)
+
+  -- Create an empty steering file that will be appended to.
+  os.execute('type nul > ' .. RECORDING_FOLDER .. '\\steering.txt')
+end
 
 client.unpause()
 client.speedmode(800)
@@ -114,7 +121,9 @@ function best_next_action(actions_so_far, actions_history)
 end
 
 local recording_frame = 1
-local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'w')
+if RECORDING_START_FRAME ~= nil then recording_frame = RECORDING_START_FRAME end
+
+local steering_file = io.open(RECORDING_FOLDER .. '\\steering.txt', 'a')
 local actions_history = {}
 while util.readProgress() < 3 do
   client.pause_av()
@@ -159,3 +168,5 @@ savestate.save(STATE_FILE)
 
 onexit()
 event.unregisterbyid(exit_guid)
+
+return recording_frame

@@ -8,6 +8,10 @@ local TRAIN_PERIOD = 3
 local util = require("util")
 
 local course = util.readCourse()
+local mode = util.readMode()
+
+-- Ensure that there is a recoridngs folder, as well as a subfolder for the current track-mode combination.
+os.execute('mkdir recordings\\' .. course .. '\\' .. mode)
 
 -- Lua doesn't seed the random number generator by default, so we need to seed it with the time.
 math.randomseed(os.time())
@@ -27,6 +31,18 @@ local search = loadfile("SearchAI.lua")
 
 local iteration = 1
 while true do
+  -- Generate a recording id.
+  local RECORDING_ID = util.generateUUID(); print("Recording ID:", RECORDING_ID)
+
+  -- Create a folder for this recording.
+  local RECORDING_FOLDER = 'recordings\\' .. course .. '\\' .. mode .. '\\play-and-search-' .. RECORDING_ID
+  os.execute('mkdir ' .. RECORDING_FOLDER)
+
+  -- Create an empty steering file that will be appended to.
+  os.execute('type nul > ' .. RECORDING_FOLDER .. '\\steering.txt')
+
+  local recording_frame = 1
+
   savestate.load(START_STATE_FILE)
   local progress = util.readProgress()
 
@@ -40,7 +56,7 @@ while true do
     end
 
     savestate.save(PRE_SEARCH_STATE_FILE)
-    search(FRAMES_TO_SEARCH)
+    recording_frame = search(FRAMES_TO_SEARCH, RECORDING_FOLDER, recording_frame)
     savestate.load(PRE_SEARCH_STATE_FILE)
   end
 
