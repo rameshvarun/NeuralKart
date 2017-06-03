@@ -1,15 +1,37 @@
-# NeuralKart 
+# NeuralKart
+
+Coming Soon
+- Video
+- Blog Post
+- Formal Writeup
 
 ## Set-up
 
+The project has only been tested on Windows, but might work in other systems with adjustments.
+
 ### Install Python Dependencies
+The following Python dependencies need to be installed.
 
 - Tensorflow
 - Keras
 - Pillow
+- mkdir_p
 
-### BizHawk
+### Get BizHawk
 
-- Get BizHawl
+Our scripts are all written for the BizHawk emulator, which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases. Then you can download BizHawk and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/
 
-## Instructions
+### (Optional) Download Our Weights and Recordings
+
+- [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ)
+- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQTGVQSUhxYjJDMEk)
+- [Recordings]()
+
+## Usage Instructions
+
+## Other Projects + Links
+
+- [TensorKart](https://github.com/kevinhughes27/TensorKart) - The first MarioKart deep learning project, which we started from as our baseline.
+- [Deep Learning for Real-Time Atari Game Play Using Offline Monte-Carlo Tree Search Planning](https://papers.nips.cc/paper/5421-deep-learning-for-real-time-atari-game-play-using-offline-monte-carlo-tree-search-planning.pdf) - The idea for using a search-based AI for teaching the Convnet AI came from this paper.
+- [A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning](https://www.cs.cmu.edu/~sross1/publications/Ross-AIStats11-NoRegret.pdf) - The DAGGER algorithm was first introduced in this paper.
+- [MarioKart 64 NEAT](https://www.youtube.com/watch?v=tmltm0ZHkHw) - This AI uses the NEAT algorithm to genetically evolve a shallow neural network
