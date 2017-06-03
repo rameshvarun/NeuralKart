@@ -1,6 +1,7 @@
 --[[ BEGIN CONFIGURATION ]]--
 WAIT_FRAMES = 5
 USE_MAPPING = true
+CHECK_PROGRESS_EVERY = 300 -- Check progress after this many frames to detect if we get stuck.
 --[[ END CONFIGURATION ]]--
 
 local chunk_args = {...}
@@ -17,6 +18,9 @@ if not success then
   print("Failed to connect to server:", error)
   return
 end
+
+local course = util.readCourse()
+tcp:send("COURSE:" .. course .. "\n")
 
 tcp:settimeout(0)
 
@@ -39,8 +43,10 @@ end
 local exit_guid = event.onexit(onexit)
 
 local current_action = 0
+local frame = 1
+local max_progress = util.readProgress()
 
-while true do
+while util.readProgress() < 3 do
   -- Process the outgoing message.
   if outgoing_message ~= nil then
     local sent, error, last_byte = tcp:send(outgoing_message, outgoing_message_index)
@@ -77,9 +83,17 @@ while true do
   emu.frameadvance()
 
   if PLAY_FOR_FRAMES ~= nil then
-    if PLAY_FOR_FRAMES > 0 then
-      PLAY_FOR_FRAMES = PLAY_FOR_FRAMES - 1
+    if PLAY_FOR_FRAMES > 0 then PLAY_FOR_FRAMES = PLAY_FOR_FRAMES - 1
     elseif PLAY_FOR_FRAMES == 0 then break end
+  end
+
+  frame = frame + 1
+
+  -- If we haven't made any progress since the last check, just break.
+  if frame % CHECK_PROGRESS_EVERY == 0 then
+    if util.readProgress() <= max_progress then
+      break
+    else max_progress = util.readProgress() end
   end
 end
 

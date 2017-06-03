@@ -7,6 +7,8 @@ local TRAIN_PERIOD = 2
 
 local util = require("util")
 
+local course = util.readCourse()
+
 -- Lua doesn't seed the random number generator by default, so we need to seed it with the time.
 math.randomseed(os.time())
 
@@ -76,6 +78,6 @@ while true do
   iteration = iteration + 1
   if iteration % TRAIN_PERIOD == 0 then
     print("Running train.py...")
-    os.execute("cmd.exe @cmd /c python35 train.py")
+    os.execute("cmd.exe @cmd /c python train.py " .. course)
   end
 end
