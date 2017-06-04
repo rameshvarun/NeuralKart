@@ -102,12 +102,16 @@ while util.readProgress() < 3 do
       print("Receive failed: ", error); break
     end
   else
-    current_action = tonumber(message)
-    for i=1, WAIT_FRAMES do
-      joypad.set({["P1 A"] = true})
-      joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
-      draw_info()
-      emu.frameadvance()
+    if message ~= "PREDICTIONERROR" then
+      current_action = tonumber(message)
+      for i=1, WAIT_FRAMES do
+        joypad.set({["P1 A"] = true})
+        joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(current_action) })
+        draw_info()
+        emu.frameadvance()
+      end
+    else
+      print("Prediction error...")
     end
     request_prediction()
   end
