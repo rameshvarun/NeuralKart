@@ -50,8 +50,11 @@ function util.bendingEnergy(nums)
   return accum
 end
 
-function util.readPlayerX()
-  return mainmemory.readfloat(0x0F69A4, true)
+function util.readPlayerX() return mainmemory.readfloat(0x0F69A4, true) end
+function util.readPlayerY() return mainmemory.readfloat(0x0F69AC, true) end
+function util.readPlayerZ() return mainmemory.readfloat(0xF69A8, true) end
+function util.readPlayerPos()
+  return {util.readPlayerX(), util.readPlayerY(), util.readPlayerZ()}
 end
 
 -- Read the current progress in the course from memory.
