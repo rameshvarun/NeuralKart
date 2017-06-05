@@ -1,6 +1,6 @@
 --[[ BEGIN CONFIGURATION ]]--
 SEARCH_STEP_FRAMES = 30 -- Each step forward lasts this many frames.
-SEARCH_FORWARD_FRAMES = 75
+SEARCH_FORWARD_FRAMES = 60
 
 -- When you actually execute a move, play for this many frames. This should stay at 30 to keep
 -- the framerate of image capture constant.
