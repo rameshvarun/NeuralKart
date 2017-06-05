@@ -140,7 +140,7 @@ while util.readProgress() < 3 do
 
   end_time = os.time()
 
-  --print("Action:", action, "Score:", score, "Time:", end_time - start_time)
+  print("Action:", action, "Score:", score, "Time:", end_time - start_time)
   table.insert(actions_history, action)
 
   savestate.load(STATE_FILE)
