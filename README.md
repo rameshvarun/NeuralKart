@@ -35,3 +35,4 @@ Our scripts are all written for the BizHawk emulator, which has embedded Lua scr
 - [Deep Learning for Real-Time Atari Game Play Using Offline Monte-Carlo Tree Search Planning](https://papers.nips.cc/paper/5421-deep-learning-for-real-time-atari-game-play-using-offline-monte-carlo-tree-search-planning.pdf) - The idea for using a search-based AI for teaching the Convnet AI came from this paper.
 - [A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning](https://www.cs.cmu.edu/~sross1/publications/Ross-AIStats11-NoRegret.pdf) - The DAGGER algorithm was first introduced in this paper.
 - [MarioKart 64 NEAT](https://www.youtube.com/watch?v=tmltm0ZHkHw) - This AI uses the NEAT algorithm to genetically evolve a shallow neural network
+- [weatherton/BizHawkMarioKart64](https://github.com/weatherton/BizHawkMarioKart64) - Some MarioKart 64 scripts which we used as a reference for memory locations.

@@ -7,8 +7,8 @@ local TRAIN_PERIOD = 2
 
 local util = require("util")
 
-local course = util.readCourse()
-local mode = util.readMode()
+local course, mode = util.readCourse(), util.readMode()
+print("Mode:", util.readMode(), "Course:", util.readCourse())
 
 -- Ensure that there is a recoridngs folder, as well as a subfolder for the current track-mode combination.
 os.execute('mkdir recordings\\' .. course .. '\\' .. mode)

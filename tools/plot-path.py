@@ -1,4 +1,11 @@
+import urllib2
 from PIL import Image, ImageDraw
+
+TRACK_DATA = {
+    'CM': ('http://www.mariouniverse.com/images/maps/n64/mk/choco-mountain.jpg'),
+    'LR': ('http://www.mariouniverse.com/images/maps/n64/mk/luigi-raceway.jpg'),
+    'MR': ('http://www.mariouniverse.com/images/maps/n64/mk/mario-raceway.jpg')
+}
 
 im = Image.open("choco-mountain.jpg")
 
