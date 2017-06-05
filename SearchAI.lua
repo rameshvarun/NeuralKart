@@ -111,7 +111,6 @@ function best_next_action(actions_so_far, actions_history)
   local _, best_score = best_next_action(actions_so_far, actions_history)
   table.remove(actions_so_far)
 
-  local best_action, best_score = nil, -math.huge
   for action in util.linspace(-1, 1, STEERING_BINS) do
     if math.abs(action) > 1e-5 then
       table.insert(actions_so_far, action)
