@@ -106,15 +106,22 @@ function best_next_action(actions_so_far, actions_history)
     return nil, eval_actions(actions_so_far, actions_history)
   end
 
+  local best_action = 0
+  table.insert(actions_so_far, 0)
+  local _, best_score = best_next_action(actions_so_far, actions_history)
+  table.remove(actions_so_far)
+
   local best_action, best_score = nil, -math.huge
   for action in util.linspace(-1, 1, STEERING_BINS) do
-    table.insert(actions_so_far, action)
-    local _, score = best_next_action(actions_so_far, actions_history)
-    if score > best_score then
-      best_score = score
-      best_action = action
+    if math.abs(action) > 1e-5 then
+      table.insert(actions_so_far, action)
+      local _, score = best_next_action(actions_so_far, actions_history)
+      if score > best_score then
+        best_score = score
+        best_action = action
+      end
+       table.remove(actions_so_far)
     end
-    table.remove(actions_so_far)
   end
 
   return best_action, best_score
