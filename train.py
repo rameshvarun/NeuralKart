@@ -140,7 +140,12 @@ def load_training_data(track):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('track', type=is_valid_track_code)
+    parser.add_argument('-c', '--cpu', action='store_true', help='Force Tensorflow to use the CPU.', default=False)
     args = parser.parse_args()
+
+    if args.cpu:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     # Load Training Data
     X_train, y_train, X_val, y_val = load_training_data(args.track)
