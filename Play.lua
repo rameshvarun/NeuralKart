@@ -66,6 +66,7 @@ local exit_guid = event.onexit(onexit)
 local current_action = 0
 local frame = 1
 local max_progress = util.readProgress()
+local esc_prev = input.get()['Escape']
 
 BOX_CENTER_X, BOX_CENTER_Y = 160, 215
 BOX_WIDTH, BOX_HEIGHT = 100, 4
@@ -80,6 +81,7 @@ function draw_info()
 end
 
 while util.readProgress() < 3 do
+
   -- Process the outgoing message.
   if outgoing_message ~= nil then
     local sent, error, last_byte = tcp:send(outgoing_message, outgoing_message_index)
@@ -134,6 +136,9 @@ while util.readProgress() < 3 do
       break
     else max_progress = util.readProgress() end
   end
+
+  if not esc_prev and input.get()['Escape'] then break end
+  esc_prev = input.get()['Escape']
 end
 
 onexit()
