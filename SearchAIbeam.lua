@@ -1,6 +1,6 @@
 --[[ BEGIN CONFIGURATION ]]--
-SEARCH_STEP_FRAMES = 30 -- Each step forward lasts this many frames.
-SEARCH_FORWARD_FRAMES = 60
+SEARCH_STEP_FRAMES = 45 -- Each step forward lasts this many frames.
+SEARCH_FORWARD_FRAMES = 75
 
 -- When you actually execute a move, play for this many frames. This should stay at 30 to keep
 -- the framerate of image capture constant.
@@ -15,7 +15,7 @@ BEAM_WIDTH = 3
 BENDING_ENERGY_WINDOW = 4
 
 PROGRESS_WEIGHT = 1
-VELOCITY_WEIGHT = 0.1
+VELOCITY_WEIGHT = 0.05
 BENDING_ENERGY_WEIGHT = 0
 
 USE_MAPPING = true
@@ -33,12 +33,17 @@ local util = require("util")
 local STATE_FILE = util.getTMPDir() .. '\\root.state'
 local STATE_FILE_TABLE = {}
 local TEMP_STATE_FILE_TABLE = {}
+local action_table = {}
+local before_step_table = {}
 for k = 1, BEAM_WIDTH, 1 do
+  table.insert(action_table, 0)
   local BEAM_STATE_FILE = util.getTMPDir() .. '\\' .. k .. '.state'
   local TEMP_FILE = util.getTMPDir() .. '\\' .. k .. 'temp.state'
+  local before_state = util.getTMPDir() .. '\\' .. k .. 'before.state'
   savestate.save(BEAM_STATE_FILE)
   table.insert(STATE_FILE_TABLE, BEAM_STATE_FILE)
   table.insert(TEMP_STATE_FILE_TABLE, TEMP_FILE)
+  table.insert(before_step_table, before_state)
 end
 
 --print('file table', STATE_FILE_TABLE)
@@ -213,6 +218,8 @@ for k=1,#STATE_FILE_TABLE,1 do
   local best_bin = best_k[k][3]
   --print("Action:", cur_action, "Score:", best_k[k][2], "Knum:", best_k[k][3])
   savestate.load(STATE_FILE_TABLE[best_bin])
+  savestate.save(before_step_table[k])
+  action_table[k] = cur_action
   for i=1, SEARCH_STEP_FRAMES do
     joypad.set({["P1 A"] = true})
     joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(cur_action, USE_MAPPING)})
@@ -260,8 +267,16 @@ while util.readProgress() < 3 do
 
     local cur_action = best_k[k][1]
     local best_bin = best_k[k][3]
+    if k == 1 then
+      savestate.load(before_step_table[best_bin])
+      client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
+      steering_file:write(action_table[best_bin] .. '\n')
+      steering_file:flush()
+    end
     print("Action:", cur_action, "Score:", best_k[k][2], "Knum:", best_k[k][3])
     savestate.load(STATE_FILE_TABLE[best_bin])
+    savestate.save(before_step_table[k])
+    action_table[k] = cur_action
     for i=1, SEARCH_STEP_FRAMES do
       joypad.set({["P1 A"] = true})
       joypad.setanalog({["P1 X Axis"] = util.convertSteerToJoystick(cur_action, USE_MAPPING)})
@@ -281,10 +296,10 @@ while util.readProgress() < 3 do
 
   savestate.load(STATE_FILE_TABLE[binnum])
 
-  client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
-  steering_file:write(best_action .. '\n')
-  steering_file:flush()
-  recording_frame = recording_frame + 1
+  --client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
+  --steering_file:write(best_action .. '\n')
+  --steering_file:flush()
+  --recording_frame = recording_frame + 1
 
   local start_progress = util.readProgress()
 
