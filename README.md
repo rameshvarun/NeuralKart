@@ -1,5 +1,9 @@
 # NeuralKart
 
+<p align="center">
+  <img src="./demo.gif"/>
+</p>
+
 Coming Soon
 - Video
 - Blog Post
