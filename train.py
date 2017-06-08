@@ -15,6 +15,7 @@ from keras.layers.normalization import BatchNormalization
 from keras import optimizers
 from keras import backend as K
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.utils import np_utils
 
 import matplotlib.pyplot as plt
 
@@ -49,7 +50,7 @@ def customized_loss(y_true, y_pred, loss='euclidean'):
     return val
 
 
-def create_model(keep_prob=0.6):
+def create_model(keep_prob=0.50):
     model = Sequential()
 
     # NVIDIA's model
@@ -69,7 +70,7 @@ def create_model(keep_prob=0.6):
     model.add(Dropout(drop_out))
     model.add(Dense(100, activation='relu'))
     model.add(Dropout(drop_out))
-    model.add(Dense(50, activation='relu'))
+    model.add(Dense(20, activation='relu'))
     model.add(Dropout(drop_out))
     model.add(Dense(10, activation='relu'))
     model.add(Dropout(drop_out))
@@ -82,20 +83,25 @@ def is_validation_set(string):
     return int.from_bytes(string_hash[:2], byteorder='big') / 2**16 > VALIDATION_SPLIT
 
 def load_training_data(track):
+    print('loading training data')
     X_train, y_train = [], []
     X_val, y_val = [], []
 
     if track == 'all':
         recordings = glob.iglob("recordings/*/*/*")
     else:
-        recordings = glob.iglob("recordings/{}/*/*".format(track))
-
+        recordings = list(os.walk(str("recordings/MR/TT")))
+        recordings = recordings[1:]
+        #for recording in recordings:
+        #    print('recording', recording[0])
+    #print('recording is', len(recordings))
     for recording in recordings:
-        filenames = list(glob.iglob('{}/*.png'.format(recording)))
+        print('recording', recording[0])
+        filenames = list(glob.iglob(str(recording[0]+'/*.png')))
         filenames.sort(key=lambda f: int(os.path.basename(f)[:-4]))
 
         steering = [float(line) for line in open(
-            ("{}/steering.txt").format(recording)).read().splitlines()]
+            (str(recording[0] + "/steering.txt"))).read().splitlines()]
 
         assert len(filenames) == len(steering), "For recording %s, the number of steering values does not match the number of images." % recording
 
@@ -152,6 +158,8 @@ if __name__ == '__main__':
 
     print(X_train.shape[0], 'training samples.')
     print(X_val.shape[0], 'validation samples.')
+    #y_train = np_utils.to_categorical(y_train, 11)
+    #y_val = np_utils.to_categorical(y_val, 11)
 
     # Training loop variables
     epochs = 100
@@ -164,9 +172,9 @@ if __name__ == '__main__':
     if os.path.isfile(weights_file):
         model.load_weights(weights_file)
 
-    model.compile(loss=customized_loss, optimizer=optimizers.adam(lr=0.0001))
+    model.compile(loss= customized_loss, optimizer=optimizers.adam(lr=0.0001))
     checkpointer = ModelCheckpoint(
         monitor='val_loss', filepath=weights_file, verbose=1, save_best_only=True, mode='min')
-    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
+    earlystopping = EarlyStopping(monitor='val_loss', patience=40)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs,
               shuffle=True, validation_data=(X_val, y_val), callbacks=[checkpointer, earlystopping])
