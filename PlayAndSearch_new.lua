@@ -4,8 +4,8 @@
 local FRAMES_TO_PLAY_MIN = 120
 local FRAMES_TO_PLAY_MAX = 200
 
-local FRAMES_TO_SEARCH = 30 * 4 -- How many frames we should search for whenever the search AI takes over.
-local TRAIN_PERIOD = 2 -- How often to train.
+local FRAMES_TO_SEARCH = 30 * 6 -- How many frames we should search for whenever the search AI takes over.
+local TRAIN_PERIOD = 3 -- How often to train.
 
 -- Set this to a pair of values if you only want to search within a certain progress region.
 local HOTSPOT = nil
@@ -84,7 +84,7 @@ while true do
         savestate.save(RECOVERY_STATE_FILE) -- If the search AI made progress, save th a recovery state.
       else
         search_stuck_counter = search_stuck_counter + 1
-        if search_stuck_counter > 2 then
+        if search_stuck_counter > 3 then
           break -- If the search AI is stuck, we basically have to reset.
         end
       end

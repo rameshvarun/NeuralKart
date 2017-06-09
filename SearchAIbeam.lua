@@ -272,6 +272,7 @@ while util.readProgress() < 3 do
       client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
       steering_file:write(action_table[best_bin] .. '\n')
       steering_file:flush()
+      recording_frame = recording_frame + 1
     end
     print("Action:", cur_action, "Score:", best_k[k][2], "Knum:", best_k[k][3])
     savestate.load(STATE_FILE_TABLE[best_bin])
@@ -299,7 +300,6 @@ while util.readProgress() < 3 do
   --client.screenshot(RECORDING_FOLDER .. '\\' .. recording_frame .. '.png')
   --steering_file:write(best_action .. '\n')
   --steering_file:flush()
-  --recording_frame = recording_frame + 1
 
   local start_progress = util.readProgress()
 
