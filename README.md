@@ -1,4 +1,4 @@
-# NeuralKart
+# NeuralKart - A Real-time Mario Kart AI using CNNs, Offline Search, and DAGGER
 
 <p align="center">
   <img src="./demo.gif"/>
