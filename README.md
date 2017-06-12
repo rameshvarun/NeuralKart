@@ -24,7 +24,7 @@ Our scripts are all written for the BizHawk emulator, which has embedded Lua scr
 ### (Optional) Download Our Weights and Recordings
 
 - [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ)
-- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQTGVQSUhxYjJDMEk)
+- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM)
 - [Recordings]()
 
 ## Usage Instructions
