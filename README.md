@@ -1,13 +1,14 @@
-# NeuralKart
+# NeuralKart - A Real-time Mario Kart AI using CNNs, Offline Search, and DAGGER
 
 <p align="center">
   <img src="./demo.gif"/>
 </p>
 
-Coming Soon
-- Video
-- Blog Post
-- Formal Writeup
+- [Videos of Runs](https://www.youtube.com/playlist?list=PLSHD7WB3aI6Ks04Z7kS_UskyG_uY02EzY)
+- [Class Poster](https://drive.google.com/open?id=0B7KSCOuXHAaQcE8wWXZmRVhjX2c)
+- Blog Post (Coming Soon)
+- Explanation Video (Coming Soon)
+- Class Writeup (Coming Soon)
 
 ## Set-up
 
@@ -29,7 +30,7 @@ Our scripts are all written for the BizHawk emulator, which has embedded Lua scr
 
 - [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ)
 - [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM)
-- [Recordings]()
+- [Recordings](https://drive.google.com/open?id=0B7KSCOuXHAaQSHFLRFpCQTBVemM)
 
 ## Usage Instructions
 
