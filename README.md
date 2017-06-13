@@ -6,9 +6,9 @@
 
 - [Videos of Runs](https://www.youtube.com/playlist?list=PLSHD7WB3aI6Ks04Z7kS_UskyG_uY02EzY)
 - [Class Poster](https://drive.google.com/open?id=0B7KSCOuXHAaQcE8wWXZmRVhjX2c)
+- [Class Writeup](https://drive.google.com/open?id=0B7KSCOuXHAaQb1FtY2wzUS1yZ0E)
 - Blog Post (Coming Soon)
 - Explanation Video (Coming Soon)
-- Class Writeup (Coming Soon)
 
 ## Set-up
 
