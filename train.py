@@ -73,7 +73,7 @@ def create_model(keep_prob=0.6):
     model.add(Dropout(drop_out))
     model.add(Dense(10, activation='relu'))
     model.add(Dropout(drop_out))
-    model.add(Dense(OUT_SHAPE, activation='softsign'))
+    model.add(Dense(OUT_SHAPE, activation='softsign', name="predictions"))
 
     return model
 
