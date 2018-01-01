@@ -22,9 +22,9 @@ The following Python dependencies need to be installed.
 - Pillow
 - mkdir_p
 
-### Get BizHawk
+### Get BizHawk (1.12.2)
 
-Our scripts are all written for the BizHawk emulator, which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases. Then you can download BizHawk and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/
+Our scripts are all written for the BizHawk emulator (tested in version 1.12.2), which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases. Then you can download BizHawk and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/
 
 ### (Optional) Download Our Weights and Recordings
 
