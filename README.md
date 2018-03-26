@@ -31,6 +31,7 @@ The following Python dependencies need to be installed.
 Our scripts are all written for the BizHawk emulator (tested in version 1.12.2), which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases/tag/1.4. Then you can download BizHawk (version 1.12.2) and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/tag/1.12.2
 
 ### Download Our Pre-trained Weights and Recordings
+These should be unzipped into the folder of the repo.
 
 - [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ) - The states should be accessible as `states/[mode]/[track].state`.
 - [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM) - The weights should be accessible as `weights/[track].hdf5`
