@@ -11,7 +11,10 @@
 
 ## Set-up
 
-The project has only been tested on Windows, but might work in other systems with adjustments.
+The project currently only works on Windows.
+
+### Install 64-bit Python 3
+This project was written for Python 3. Furthermore, Tensorflow requires 64-bit Python.
 
 ### Install Python Dependencies
 The following Python dependencies need to be installed.
@@ -19,19 +22,32 @@ The following Python dependencies need to be installed.
 - Tensorflow
 - Keras
 - Pillow
+- matplotlib
 - mkdir_p
+- h5py
 
 ### Get BizHawk (1.12.2)
 
-Our scripts are all written for the BizHawk emulator (tested in version 1.12.2), which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases. Then you can download BizHawk and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/
+Our scripts are all written for the BizHawk emulator (tested in version 1.12.2), which has embedded Lua scripting. To get BizHawk you first need to install the prerequisites - https://github.com/TASVideos/BizHawk-Prereqs/releases/tag/1.4. Then you can download BizHawk (version 1.12.2) and unzip it to any directory - https://github.com/TASVideos/BizHawk/releases/tag/1.12.2
 
-### (Optional) Download Our Weights and Recordings
+### Download Our Pre-trained Weights and Recordings
 
-- [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ)
-- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM)
-- [Recordings](https://drive.google.com/open?id=0B7KSCOuXHAaQSHFLRFpCQTBVemM)
+- [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ) - The states should be accessible as `states/[mode]/[track].state`.
+- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM) - The weights should be accessible as `weights/[track].hdf5`
+- [Recordings (Optional)](https://drive.google.com/open?id=0B7KSCOuXHAaQSHFLRFpCQTBVemM) - The recordings should be accessible as `recordings/[track]/[mode]/[recording]/[frame].png`.
 
 ## Usage Instructions
+### Running a Live Demo
+1. Download the save states and pre-trained weights.
+2. Run `predict-server.py` using Python 3 - this starts a server on port `36296` which actually runs the model.
+  - You can pass a `--cpu` to force Tensorflow to run on the CPU.
+3. Open BizHawk and Load the MarioKart 64 ROM.
+4. Turn off messages (View > Display Messages). You don't have to do this, but they get in the way.
+4. Open the BizHawk Lua console (Tools > Lua Console).
+5. Load `Demo.lua`
+
+This should automatically play three tracks in a loop. You can hit `Esc` to switch to the next track. Note that the clipboard is used to pass frames from the emulator to the Python script. It's a hack, but it seems to work - just don't try to copy or paste anything while the demo is running.
+
 
 ## Other Projects + Links
 
