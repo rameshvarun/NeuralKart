@@ -40,7 +40,7 @@ Our scripts are all written for the BizHawk emulator (tested in version 1.12.2),
 ### Running a Live Demo
 1. Download the save states and pre-trained weights.
 2. Run `predict-server.py` using Python 3 - this starts a server on port `36296` which actually runs the model.
-  - You can pass a `--cpu` to force Tensorflow to run on the CPU.
+    - You can pass a `--cpu` to force Tensorflow to run on the CPU.
 3. Open BizHawk and Load the MarioKart 64 ROM.
 4. Turn off messages (View > Display Messages). You don't have to do this, but they get in the way.
 4. Open the BizHawk Lua console (Tools > Lua Console).
