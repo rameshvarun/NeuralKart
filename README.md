@@ -38,16 +38,36 @@ Our scripts are all written for the BizHawk emulator (tested in version 1.12.2),
 
 ## Usage Instructions
 ### Running a Live Demo
+These instructions can be used to run a demo of three tracks that the AI performs well on.
+
 1. Download the save states and pre-trained weights.
 2. Run `predict-server.py` using Python 3 - this starts a server on port `36296` which actually runs the model.
     - You can pass a `--cpu` to force Tensorflow to run on the CPU.
 3. Open BizHawk and Load the MarioKart 64 ROM.
-4. Turn off messages (View > Display Messages). You don't have to do this, but they get in the way.
+4. Turn off messages (View > Display Messages).
+    - You don't have to do this, but they get in the way.
 4. Open the BizHawk Lua console (Tools > Lua Console).
 5. Load `Demo.lua`
 
-This should automatically play three tracks in a loop. You can hit `Esc` to switch to the next track. Note that the clipboard is used to pass frames from the emulator to the Python script. It's a hack, but it seems to work - just don't try to copy or paste anything while the demo is running.
+This should automatically play three tracks in a loop. You can hit `Esc` to switch to the next track. You can also hit the arrow keys to manually steer the player. This can be used to demonstrate the AI's stability.
 
+Note that the clipboard is used to pass frames from the emulator to the Python script. It's a hack, but it seems to work - just don't try to copy or paste anything while the scripts are running.
+
+### Run the AI on another Track
+Once you have the demo working, you can use these instructions to play on other tracks. Note that you can only play on a track if there are weights trained for it.
+
+First, navigate to another track from the menu, or use one of our save states (File > Load State > Load Named State). These states are set to be the frame after the race starts. Then load `Play.lua` from the Lua console.
+
+### Training the Model on Recordings
+Once you have the AI running, you probably want to try retraining the weights based off our recordings. First download our weights from the link above, then run `train.py [track]`. You can also use `--cpu` to force it to use the CPU.
+
+### Creating new Recordings from the Search AI
+Load a state and then load `SearchAI.lua` in order to generate a recording using the search AI. Recordings consist of a series of frames and a `steering.txt` file that contains the recorded steering values.
+
+### Running the Iterative Improvement Loop
+As mentioned in the paper, we ran an iterative improvement loop that swaps between playing and generating new recordings. To bootstrap the process, you must first generate a recording using the search AI and create an initial weights file using `train.py`. Now start `predict-server.py` using the `--cpu` flag (so that you can train on the GPU).
+
+Now you can load a state and run `PlayAndSearch.lua` which alternates between playing and searching. It retrains every other run. You probably need to edit the code that calls `train.py` on line 90 so that it works in your environment.
 
 ## Other Projects + Links
 
