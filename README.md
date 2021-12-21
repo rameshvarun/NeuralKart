@@ -6,8 +6,8 @@
 
 - [Explanation Video](https://www.youtube.com/watch?v=Eo07BAsyQ24)
 - [Videos of Runs](https://www.youtube.com/playlist?list=PLSHD7WB3aI6Ks04Z7kS_UskyG_uY02EzY)
-- [Class Poster](https://drive.google.com/open?id=0B7KSCOuXHAaQcE8wWXZmRVhjX2c)
-- [Class Writeup](https://drive.google.com/open?id=0B7KSCOuXHAaQb1FtY2wzUS1yZ0E)
+- [Class Poster](https://drive.google.com/file/d/0B7KSCOuXHAaQcE8wWXZmRVhjX2c/view?usp=sharing&resourcekey=0-zSfK5sR5MqcxH5n-8nbQog)
+- [Class Writeup](https://drive.google.com/file/d/0B7KSCOuXHAaQb1FtY2wzUS1yZ0E/view?usp=sharing&resourcekey=0-eZ7X77z_SN4iFclhwypVBQ)
 
 ## Set-up
 
@@ -33,9 +33,9 @@ Our scripts are all written for the BizHawk emulator (tested in version 1.12.2),
 ### Download Our Pre-trained Weights and Recordings
 These should be unzipped into the folder of the repo.
 
-- [Save States](https://drive.google.com/open?id=0B7KSCOuXHAaQaGNDWEI2MlBSRDQ) - The states should be accessible as `states/[mode]/[track].state`.
-- [Weights](https://drive.google.com/open?id=0B7KSCOuXHAaQQUY3V2dqQjNNbXM) - The weights should be accessible as `weights/[track].hdf5`
-- [Recordings (Optional)](https://drive.google.com/open?id=0B7KSCOuXHAaQSHFLRFpCQTBVemM) - The recordings should be accessible as `recordings/[track]/[mode]/[recording]/[frame].png`.
+- [Save States](https://drive.google.com/file/d/0B7KSCOuXHAaQaGNDWEI2MlBSRDQ/view?usp=sharing&resourcekey=0-XOjcn3-MDTh4P4o4pHLy_A) - The states should be accessible as `states/[mode]/[track].state`.
+- [Weights](https://drive.google.com/drive/folders/0B7KSCOuXHAaQQUY3V2dqQjNNbXM?resourcekey=0-FB2hrvvR6SPtrE3c234vyQ&usp=sharing) - The weights should be accessible as `weights/[track].hdf5`
+- [Recordings (Optional)](https://drive.google.com/drive/folders/0B7KSCOuXHAaQSHFLRFpCQTBVemM?resourcekey=0-PEvH26TFEVln55_BBIfFbg&usp=sharing) - The recordings should be accessible as `recordings/[track]/[mode]/[recording]/[frame].png`.
 
 ## Usage Instructions
 ### Running a Live Demo
